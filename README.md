@@ -1,6 +1,8 @@
 # phlight
 
-A shitty little set of workflow skills that stand on the shoulders of giants like [Superpowers](https://github.com/obra/superpowers) and the models themselves. Use at your own risk.
+A controlled, modular workflow for your AI coding agent. Built on [Superpowers](https://github.com/obra/superpowers).
+
+A shitty little set of workflow skills that stand on the shoulders of giants like Superpowers and the models themselves. Use at your own risk.
 
 Provides 10 skills that guide coding agents through a structured development pipeline: architecture, planning, implementation, code review, and merge - with task tracking, quality gates, and auto-chaining built in.
 
