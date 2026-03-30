@@ -4,6 +4,9 @@ A shitty little set of workflow skills that stand on the shoulders of giants lik
 
 Provides 10 skills that guide coding agents through a structured development pipeline: architecture, planning, implementation, code review, and merge - with task tracking, quality gates, and auto-chaining built in.
 
+**[User Guide](docs/guide.md)** - how it works, flags, human stops, platform differences, common workflows
+**[Skill Reference](docs/reference.md)** - args, flags, inputs, outputs for every skill
+
 ## Skills
 
 | Skill | Purpose |
