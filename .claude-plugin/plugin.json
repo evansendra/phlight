@@ -1,0 +1,19 @@
+{
+  "name": "phlight",
+  "version": "0.1.0",
+  "description": "Structured development workflow - architect, implement, review, merge with task tracking, quality gates, and auto-chaining",
+  "author": {
+    "name": "Evan"
+  },
+  "license": "MIT",
+  "keywords": [
+    "workflow",
+    "development",
+    "architecture",
+    "code-review",
+    "task-tracking",
+    "quality-gates",
+    "tdd",
+    "pr-management"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "phlight-marketplace",
+  "owner": {
+    "name": "Evan"
+  },
+  "metadata": {
+    "description": "Structured development workflow - architect, implement, review, merge with task tracking, quality gates, and auto-chaining"
+  },
+  "plugins": [
+    {
+      "name": "phlight",
+      "source": "..",
+      "description": "Structured development workflow plugin with 10 skills: architect, implement, review, merge, split, fast, task, ask, project-init, skill-build",
+      "categories": ["workflow", "development"],
+      "tags": ["workflow", "architecture", "code-review", "task-tracking", "tdd"]
+    }
+  ]
+}
