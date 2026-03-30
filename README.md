@@ -27,15 +27,13 @@ architect -> split (if needed) -> implement -> review -> merge
 
 Use `--auto` to chain the full pipeline. Required human stops (plan approval, manual testing, merge confirmation) are always respected.
 
-## Dependencies
+## Installation
 
-phlight builds on top of:
+### Dependencies
+
+Install these first:
 - [Superpowers](https://github.com/obra/superpowers) - brainstorming, writing-plans, executing-plans skills
 - [pr-review-toolkit](https://github.com/anthropics/claude-plugins-official) - code-reviewer, code-simplifier agents
-
-Install these before using phlight.
-
-## Installation
 
 ### Claude Code (via Plugin Marketplace)
 
