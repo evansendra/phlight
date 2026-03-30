@@ -42,7 +42,7 @@ Install these before using phlight.
 Register the marketplace, then install:
 
 ```bash
-/plugin marketplace add <owner>/phlight
+/plugin marketplace add evansendra/phlight
 /plugin install phlight@phlight-marketplace
 ```
 
@@ -58,7 +58,7 @@ Add to your `opencode.json` (project-level or `~/.config/opencode/opencode.json`
 
 ```json
 {
-  "plugin": ["phlight@git+https://github.com/<owner>/phlight.git"]
+  "plugin": ["phlight@git+https://github.com/evansendra/phlight.git"]
 }
 ```
 
@@ -66,7 +66,7 @@ Pin a specific version:
 
 ```json
 {
-  "plugin": ["phlight@git+https://github.com/<owner>/phlight.git#v0.1.0"]
+  "plugin": ["phlight@git+https://github.com/evansendra/phlight.git#v0.1.0"]
 }
 ```
 
