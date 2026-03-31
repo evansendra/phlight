@@ -2,6 +2,8 @@
 
 This is the human-readable guide. The skills themselves contain detailed agent instructions, but this doc is for you - the person driving the thing.
 
+For exact signatures, flags, args, inputs, and outputs, see the **[Skill Reference](reference.md)**.
+
 ## The Big Idea
 
 phlight is a pipeline: **architect -> split -> implement -> review -> merge**. You can run it end-to-end with `--auto`, or invoke any skill individually at any point. The pipeline is designed around one core principle: agents handle the grunt work, humans make the decisions.
