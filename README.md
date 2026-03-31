@@ -50,7 +50,7 @@ Register the marketplace, then install:
 ### Claude Code (local development)
 
 ```bash
-cc --plugin-dir /path/to/phlight
+claude --plugin-dir /path/to/phlight
 ```
 
 ### OpenCode
