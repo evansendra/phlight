@@ -40,10 +40,15 @@ Install these first:
 
 ### Claude Code (via Plugin Marketplace)
 
-Register the marketplace, then install:
+Register the marketplace:
 
 ```bash
 /plugin marketplace add evansendra/phlight
+```
+
+Then install the plugin:
+
+```bash
 /plugin install phlight@phlight-marketplace
 ```
 
