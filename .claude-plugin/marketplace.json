@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "phlight",
-      "source": "..",
+      "source": ".",
       "description": "Structured development workflow plugin with 10 skills: architect, implement, review, merge, split, fast, task, ask, project-init, skill-build",
       "categories": ["workflow", "development"],
       "tags": ["workflow", "architecture", "code-review", "task-tracking", "tdd"]
