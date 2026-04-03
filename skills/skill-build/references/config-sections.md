@@ -3,7 +3,7 @@
 Reference for all config sections used by phlight skills. Each section can live
 at any CLAUDE.md scope (project, per-user-per-project, global user). Skills
 check for required config on startup and hard-fail if missing, directing the
-user to `/phlight:project-init` for guided setup. This is a one-time cost per
+user to `/phlight-project-init` for guided setup. This is a one-time cost per
 project - once configured, skills work every time.
 
 ## Task Management
@@ -84,9 +84,9 @@ be runnable from the project root. Chain multiple commands with ` && `.
 
 ### How skills use this
 
-- `phlight:merge` runs all configured gates before creating a PR
-- `phlight:review` assumes these gates already pass
-- If absent, `phlight:merge` hard-fails with setup instructions
+- `phlight-merge` runs all configured gates before creating a PR
+- `phlight-review` assumes these gates already pass
+- If absent, `phlight-merge` hard-fails with setup instructions
 
 ---
 
@@ -116,6 +116,6 @@ Split plan naming: `YYYY-MM-DD-<feature>-pr<N>-<short-label>.md`
 
 ### How skills use this
 
-- `phlight:architect` writes plan files to the configured directory
-- `phlight:split` reads from and writes to the configured directory
+- `phlight-architect` writes plan files to the configured directory
+- `phlight-split` reads from and writes to the configured directory
 - Plan files are local-only working documents, never committed to git

@@ -15,5 +15,6 @@
     "quality-gates",
     "tdd",
     "pr-management"
-  ]
+  ],
+  "skills": "./skills"
 }

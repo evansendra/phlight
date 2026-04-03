@@ -14,11 +14,11 @@ is understanding, not action.
 ## Usage
 
 ```
-/phlight:ask how does the sync service handle rate limiting?
-/phlight:ask what features are planned but not yet implemented?
-/phlight:ask triage this bug: users see a blank screen after login
-/phlight:ask what's the tech stack for the frontend?
-/phlight:ask should we prioritize X or Y?
+/phlight-ask how does the sync service handle rate limiting?
+/phlight-ask what features are planned but not yet implemented?
+/phlight-ask triage this bug: users see a blank screen after login
+/phlight-ask what's the tech stack for the frontend?
+/phlight-ask should we prioritize X or Y?
 ```
 
 ## No Prerequisites

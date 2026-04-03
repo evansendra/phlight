@@ -1,21 +1,21 @@
 ---
 name: phlight-review
-description: Use after phlight:implement when code is ready - opinionated PR fitness review focused on bloat, anti-patterns, and simplification, with a brief pre-merge sanity checklist
+description: Use after phlight-implement when code is ready - opinionated PR fitness review focused on bloat, anti-patterns, and simplification, with a brief pre-merge sanity checklist
 argument-hint: [--auto] [--noconfirm]
 ---
 
 # Review
 
-Quality gate between `phlight:implement` and `phlight:merge`. Review the full diff
+Quality gate between `phlight-implement` and `phlight-merge`. Review the full diff
 for PR fitness - not lint or test correctness (assumed passing), but whether the
 PR is tight, clean, and free of unnecessary baggage.
 
 ## Usage
 
 ```
-/phlight:review
-/phlight:review --auto
-/phlight:review --auto --noconfirm
+/phlight-review
+/phlight-review --auto
+/phlight-review --auto --noconfirm
 ```
 
 ## Flags
@@ -45,7 +45,7 @@ If `tool: none`, skip task tracking and proceed.
 ## Assumptions
 
 - Tier 1 quality gates (lint, format, build, tests) already pass
-- The human has been testing incrementally during `phlight:implement`
+- The human has been testing incrementally during `phlight-implement`
 - This is a judgment-based review, not an automated checklist
 
 ## Process
@@ -210,10 +210,10 @@ Before merging, confirm:
 ## Completion
 
 **If verdict is CLEAN:**
-- If --auto is set: invoke `/phlight:merge --auto [--noconfirm]`
-- If --auto is not set: suggest `/phlight:merge`
+- If --auto is set: invoke `/phlight-merge --auto [--noconfirm]`
+- If --auto is not set: suggest `/phlight-merge`
 
 **If verdict is NEEDS CHANGES:**
 - Present the findings. The chain pauses here regardless of --auto.
-- After the user addresses the issues, they can re-run `/phlight:review` or
-  proceed to `/phlight:merge`.
+- After the user addresses the issues, they can re-run `/phlight-review` or
+  proceed to `/phlight-merge`.

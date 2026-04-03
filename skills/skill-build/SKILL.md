@@ -19,7 +19,7 @@ Start by understanding what the user wants. Ask focused questions, but don't
 front-load too many at once. Start with the essentials:
 
 1. **What does this skill do?** Get the core purpose in one or two sentences
-2. **When is it invoked?** User-triggered (`/phlight:name`) vs model-triggered (auto-detected from context)
+2. **When is it invoked?** User-triggered (`/phlight-name`) vs model-triggered (auto-detected from context)
 3. **What external tools or services does it touch?** APIs, CLIs, MCP tools, file systems
 
 If the user already has a clear picture (e.g. from earlier conversation), skip
@@ -55,7 +55,7 @@ from your config."
 
 Based on the invocation style from Phase 1:
 
-- **Command** (`commands/name.md`): user-invoked via `/phlight:name`. Best for
+- **Command** (`commands/name.md`): user-invoked via `/phlight-name`. Best for
   explicit actions with clear start/end (creating things, running workflows).
   Simpler structure, single file.
 - **Skill** (`skills/name/SKILL.md`): can be model-invoked or user-invoked.
@@ -91,9 +91,8 @@ Skill names must:
 - Not start/end with hyphens
 - Match the containing directory name
 
-The plugin namespace (`phlight:`) is prepended automatically by Claude Code.
-For OpenCode compatibility, the `name` field in SKILL.md frontmatter should
-use the `phlight-` prefix (e.g. `name: phlight-myskill`).
+The `name` field in SKILL.md frontmatter determines the invocation syntax.
+Use the `phlight-` prefix (e.g. `name: phlight-myskill`).
 
 ### 2d: Tool access
 
@@ -111,10 +110,10 @@ Be specific with Bash patterns rather than allowing all Bash access.
 Compile the design into a concrete plan. Present it as:
 
 ```
-## Skill: phlight:<name>
+## Skill: phlight-<name>
 
 **Type**: command | skill
-**Invocation**: /phlight:<name> [args]
+**Invocation**: /phlight-<name> [args]
 **Tools**: <list>
 
 ### Config required (CLAUDE.md)
@@ -138,8 +137,7 @@ Do NOT proceed to implementation until the user approves.
 After approval, build the skill file(s). Follow these rules:
 
 - Use imperative form ("Analyze the input", not "You should analyze")
-- Include `name: phlight-<skillname>` in SKILL.md frontmatter (required for
-  OpenCode compatibility)
+- Include `name: phlight-<skillname>` in SKILL.md frontmatter
 - Include a Prerequisites section if the skill needs CLAUDE.md config
 - Include a Preview and approval section if the skill has external side effects
 - Keep SKILL.md under 2000 words; move detail to references/

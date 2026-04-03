@@ -1,6 +1,6 @@
 ---
 name: phlight-task
-description: Manage tasks in the configured provider - create, view, and list tasks. Use when the user wants to create a task, view task details, list tasks, or references /phlight:task
+description: Manage tasks in the configured provider - create, view, and list tasks. Use when the user wants to create a task, view task details, list tasks, or references /phlight-task
 argument-hint: <subcommand> [args] | <task-id>
 ---
 
@@ -11,14 +11,14 @@ Unified interface for task management operations.
 ## Usage
 
 ```
-/phlight:task                              # help screen
-/phlight:task create <description>         # create a new task
-/phlight:task view <task-id>               # view task details
-/phlight:task list [filters]               # list tasks
-/phlight:task <task-id>                    # shorthand for view
-/phlight:task help                         # help screen
-/phlight:task --help | -h | h | --h | -help  # help screen
-/phlight:task <subcommand> --help          # help for that subcommand
+/phlight-task                              # help screen
+/phlight-task create <description>         # create a new task
+/phlight-task view <task-id>               # view task details
+/phlight-task list [filters]               # list tasks
+/phlight-task <task-id>                    # shorthand for view
+/phlight-task help                         # help screen
+/phlight-task --help | -h | h | --h | -help  # help screen
+/phlight-task <subcommand> --help          # help for that subcommand
 ```
 
 ## Prerequisites
@@ -27,7 +27,7 @@ This skill requires a `## Task Management` section in loaded context. If not
 found, STOP and show this error:
 
 > No `## Task Management` config found in any loaded CLAUDE.md or rules file.
-> Run `/phlight:project-init` for guided setup, or add manually at whichever scope
+> Run `/phlight-project-init` for guided setup, or add manually at whichever scope
 > fits:
 >
 > - **Project (shared)**: `CLAUDE.md` or `.claude/CLAUDE.md`
@@ -60,11 +60,11 @@ note: "Unknown subcommand: `<arg>`. See usage above."
 When showing help, display:
 
 ```
-phlight:task - manage tasks in the configured provider
+phlight-task - manage tasks in the configured provider
 
 Usage:
-  /phlight:task <subcommand> [args]
-  /phlight:task <task-id>            shorthand for view
+  /phlight-task <subcommand> [args]
+  /phlight-task <task-id>            shorthand for view
 
 Subcommands:
   create <description>            draft and create a new task
@@ -76,7 +76,7 @@ Options:
 
 Provider: <configured provider> (<tool value from config>)
 
-Run /phlight:task <subcommand> --help for subcommand details.
+Run /phlight-task <subcommand> --help for subcommand details.
 ```
 
 ## Subcommand: create
@@ -145,10 +145,10 @@ Return the task URL or ID when done.
 ### create --help
 
 ```
-phlight:task create - draft and create a new task
+phlight-task create - draft and create a new task
 
 Usage:
-  /phlight:task create <description>
+  /phlight-task create <description>
 
 Drafts a task from your description, previews it for approval, then creates
 it in the configured provider. Scales the body to match the task's complexity.
@@ -187,11 +187,11 @@ Keep output concise. If the description is very long, truncate and note
 ### view --help
 
 ```
-phlight:task view - view task details
+phlight-task view - view task details
 
 Usage:
-  /phlight:task view <task-id>
-  /phlight:task <task-id>            shorthand
+  /phlight-task view <task-id>
+  /phlight-task <task-id>            shorthand
 
 Fetches and displays a concise summary of the task: title, status, assignee,
 description, tags, and recent activity.
@@ -211,7 +211,7 @@ Parse filter arguments. Supported filters:
 - No filters: sensible default per provider (typically: open tasks assigned to
   the current user, most recent first, limit 10)
 
-Filters can be combined: `/phlight:task list --mine --status "in progress"`
+Filters can be combined: `/phlight-task list --mine --status "in progress"`
 
 ### Process
 
@@ -234,10 +234,10 @@ If no results, say so clearly: "No tasks found matching filters: <filters>"
 ### list --help
 
 ```
-phlight:task list - list tasks
+phlight-task list - list tasks
 
 Usage:
-  /phlight:task list [filters]
+  /phlight-task list [filters]
 
 Filters:
   --mine                  tasks assigned to me

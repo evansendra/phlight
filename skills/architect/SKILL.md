@@ -1,20 +1,20 @@
 ---
 name: phlight-architect
-description: Use when starting a feature or task that needs design thinking before implementation - brainstorms and plans interactively, producing a plan for phlight:implement
+description: Use when starting a feature or task that needs design thinking before implementation - brainstorms and plans interactively, producing a plan for phlight-implement
 argument-hint: <task description or context> [--auto] [--noconfirm]
 ---
 
 # Architect
 
-The thinking counterpart to `phlight:implement`. Brainstorm and plan interactively
+The thinking counterpart to `phlight-implement`. Brainstorm and plan interactively
 with the user. Implementation is handled separately.
 
 ## Usage
 
 ```
-/phlight:architect <task description or context>
-/phlight:architect <task description> --auto
-/phlight:architect <task description> --auto --noconfirm
+/phlight-architect <task description or context>
+/phlight-architect <task description> --auto
+/phlight-architect <task description> --auto --noconfirm
 ```
 
 ## Flags
@@ -102,9 +102,9 @@ assessed.
 Announce the plan file's absolute path and the size assessment.
 
 **If --auto is set:**
-- If split is recommended: invoke `/phlight:split {path} --auto [--noconfirm]`
-- If PR-sized: invoke `/phlight:implement {path} --auto [--noconfirm]`
+- If split is recommended: invoke `/phlight-split {path} --auto [--noconfirm]`
+- If PR-sized: invoke `/phlight-implement {path} --auto [--noconfirm]`
 
 **If --auto is not set:**
-- If split is recommended: suggest `/phlight:split {path}`
-- If PR-sized: suggest `/phlight:implement {path}`
+- If split is recommended: suggest `/phlight-split {path}`
+- If PR-sized: suggest `/phlight-implement {path}`

@@ -2,14 +2,12 @@
 
 Quick reference for all phlight skills. For detailed explanations, see the [User Guide](guide.md).
 
-OpenCode users: replace `/phlight:` with `phlight-` and colons with hyphens throughout.
-
 ---
 
 ## architect
 
 ```
-/phlight:architect <description> [--auto] [--noconfirm]
+/phlight-architect <description> [--auto] [--noconfirm]
 ```
 
 | | |
@@ -26,7 +24,7 @@ OpenCode users: replace `/phlight:` with `phlight-` and colons with hyphens thro
 ## split
 
 ```
-/phlight:split <plan-path> [--auto] [--noconfirm]
+/phlight-split <plan-path> [--auto] [--noconfirm]
 ```
 
 | | |
@@ -43,7 +41,7 @@ OpenCode users: replace `/phlight:` with `phlight-` and colons with hyphens thro
 ## implement
 
 ```
-/phlight:implement <plan-path-or-description> [--auto] [--noconfirm]
+/phlight-implement <plan-path-or-description> [--auto] [--noconfirm]
 ```
 
 | | |
@@ -60,7 +58,7 @@ OpenCode users: replace `/phlight:` with `phlight-` and colons with hyphens thro
 ## review
 
 ```
-/phlight:review [--auto] [--noconfirm]
+/phlight-review [--auto] [--noconfirm]
 ```
 
 | | |
@@ -77,7 +75,7 @@ OpenCode users: replace `/phlight:` with `phlight-` and colons with hyphens thro
 ## merge
 
 ```
-/phlight:merge [--auto] [--noconfirm]
+/phlight-merge [--auto] [--noconfirm]
 ```
 
 | | |
@@ -94,7 +92,7 @@ OpenCode users: replace `/phlight:` with `phlight-` and colons with hyphens thro
 ## fast
 
 ```
-/phlight:fast <description-or-task-id> [--noconfirm]
+/phlight-fast <description-or-task-id> [--noconfirm]
 ```
 
 | | |
@@ -111,15 +109,15 @@ OpenCode users: replace `/phlight:` with `phlight-` and colons with hyphens thro
 ## task
 
 ```
-/phlight:task <subcommand> [args]
-/phlight:task <task-id>
+/phlight-task <subcommand> [args]
+/phlight-task <task-id>
 ```
 
 ### Subcommands
 
 **create**
 ```
-/phlight:task create <description>
+/phlight-task create <description>
 ```
 | | |
 |---|---|
@@ -128,8 +126,8 @@ OpenCode users: replace `/phlight:` with `phlight-` and colons with hyphens thro
 
 **view**
 ```
-/phlight:task view <task-id>
-/phlight:task <task-id>
+/phlight-task view <task-id>
+/phlight-task <task-id>
 ```
 | | |
 |---|---|
@@ -138,7 +136,7 @@ OpenCode users: replace `/phlight:` with `phlight-` and colons with hyphens thro
 
 **list**
 ```
-/phlight:task list [--mine] [--status <status>] [--recent [N]]
+/phlight-task list [--mine] [--status <status>] [--recent [N]]
 ```
 | | |
 |---|---|
@@ -148,8 +146,8 @@ OpenCode users: replace `/phlight:` with `phlight-` and colons with hyphens thro
 
 **help**
 ```
-/phlight:task --help
-/phlight:task <subcommand> --help
+/phlight-task --help
+/phlight-task <subcommand> --help
 ```
 
 | | |
@@ -161,7 +159,7 @@ OpenCode users: replace `/phlight:` with `phlight-` and colons with hyphens thro
 ## ask
 
 ```
-/phlight:ask <question>
+/phlight-ask <question>
 ```
 
 | | |
@@ -178,7 +176,7 @@ OpenCode users: replace `/phlight:` with `phlight-` and colons with hyphens thro
 ## project-init
 
 ```
-/phlight:project-init [--check]
+/phlight-project-init [--check]
 ```
 
 | | |
@@ -195,7 +193,7 @@ OpenCode users: replace `/phlight:` with `phlight-` and colons with hyphens thro
 ## skill-build
 
 ```
-/phlight:skill-build
+/phlight-skill-build
 ```
 
 | | |

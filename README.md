@@ -81,14 +81,14 @@ Pin a specific version:
 Start a new session and run:
 
 ```
-/phlight:project-init --check
+/phlight-project-init --check
 ```
 
 (OpenCode: `phlight-project-init --check`)
 
 ## Configuration
 
-phlight uses project-specific config sections in your CLAUDE.md or rules files. Run `/phlight:project-init` for guided setup, or add manually:
+phlight uses project-specific config sections in your CLAUDE.md or rules files. Run `/phlight-project-init` for guided setup, or add manually:
 
 ### Task Management (required)
 
@@ -121,13 +121,13 @@ Supported providers: `clickup`, `linear`, `github`, `jira`, `none`
 ## Quick Start
 
 ```
-/phlight:fast fix the login redirect loop on the /callback route
+/phlight-fast fix the login redirect loop on the /callback route
 ```
 
 Or for larger work:
 
 ```
-/phlight:architect add CSV export to the reports dashboard --auto
+/phlight-architect add CSV export to the reports dashboard --auto
 ```
 
 ## License

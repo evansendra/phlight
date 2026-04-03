@@ -6,16 +6,16 @@ argument-hint: [--auto] [--noconfirm]
 
 # Merge
 
-The completion counterpart to `phlight:implement`. The user has verified the work
+The completion counterpart to `phlight-implement`. The user has verified the work
 manually and wants it merged into the codebase.
 
 ## Usage
 
 ```
-/phlight:merge
-/phlight:merge --noconfirm
-/phlight:merge --auto
-/phlight:merge --auto --noconfirm
+/phlight-merge
+/phlight-merge --noconfirm
+/phlight-merge --auto
+/phlight-merge --auto --noconfirm
 ```
 
 ## Flags
@@ -75,9 +75,9 @@ plan files, parent plan references, or a `PR: N of M` field in the plan).
 
 **If more plans remain in the sequence:**
 - Announce the absolute path to the next plan file
-- If --auto is set: invoke `/phlight:implement {next-plan-path} --auto
+- If --auto is set: invoke `/phlight-implement {next-plan-path} --auto
   [--noconfirm]`
-- If --auto is not set: suggest running `/phlight:implement` for the next plan
+- If --auto is not set: suggest running `/phlight-implement` for the next plan
 
 **If this was the final plan (or not part of a sequence):**
 - Announce completion

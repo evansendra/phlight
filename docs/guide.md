@@ -11,7 +11,7 @@ phlight is a pipeline: **architect -> split -> implement -> review -> merge**. Y
 ## The Pipeline
 
 ```
-/phlight:architect  ->  /phlight:split  ->  /phlight:implement  ->  /phlight:review  ->  /phlight:merge
+/phlight-architect  ->  /phlight-split  ->  /phlight-implement  ->  /phlight-review  ->  /phlight-merge
      |                    (if needed)              |                       |                    |
      |                                             |                       |                    |
   writes a plan                              writes code              reviews diff         merges PR
@@ -21,7 +21,7 @@ phlight is a pipeline: **architect -> split -> implement -> review -> merge**. Y
 
 ### You can enter anywhere
 
-The pipeline isn't a rigid sequence you have to start from the beginning. Already have code on a branch? Skip straight to `/phlight:review`. Already reviewed? Go to `/phlight:merge`. Have a plan file from somewhere else? Hand it to `/phlight:implement`.
+The pipeline isn't a rigid sequence you have to start from the beginning. Already have code on a branch? Skip straight to `/phlight-review`. Already reviewed? Go to `/phlight-merge`. Have a plan file from somewhere else? Hand it to `/phlight-implement`.
 
 Each skill checks its own prerequisites (config sections) but doesn't care what came before it.
 
@@ -34,13 +34,13 @@ Two flags work across all pipeline skills:
 Chains skills together automatically. After each skill completes (and any required human stop is cleared), it invokes the next skill in the pipeline.
 
 ```
-/phlight:architect my feature --auto
+/phlight-architect my feature --auto
 ```
 
 This will: architect -> (you approve the plan) -> split if needed -> implement -> (you test manually) -> review -> (if clean) -> merge -> (you confirm) -> done.
 
 ```
-/phlight:architect my feature --auto --noconfirm
+/phlight-architect my feature --auto --noconfirm
 ```
 
 Same thing, but skips the merge confirmation at the end.
@@ -48,8 +48,8 @@ Same thing, but skips the merge confirmation at the end.
 You can attach `--auto` at any entry point:
 
 ```
-/phlight:implement path/to/plan.md --auto        # implement -> review -> merge
-/phlight:review --auto                            # review -> merge (if clean)
+/phlight-implement path/to/plan.md --auto        # implement -> review -> merge
+/phlight-review --auto                            # review -> merge (if clean)
 ```
 
 ### `--noconfirm`
@@ -101,11 +101,11 @@ A few things worth calling out that you won't get from the reference:
 - **fast** has a scope guard: if the work grows beyond the quick scope, the agent stops and tells you to switch to the full pipeline. It won't let a "quick fix" silently become a large feature.
 - **review** skips style nits, formatting opinions, and theoretical concerns. If a senior reviewer wouldn't request-changes over it, it's not in the report.
 - **implement** is split-plan-aware: if you're on PR 2 of 5, it knows about the sequence and chains to the next plan after merge.
-- **task** subcommands each support `--help` (e.g. `/phlight:task create --help`).
+- **task** subcommands each support `--help` (e.g. `/phlight-task create --help`).
 
 ## Configuration Quick Reference
 
-All config lives in your CLAUDE.md or rules files. Run `/phlight:project-init` to set up interactively, or add manually.
+All config lives in your CLAUDE.md or rules files. Run `/phlight-project-init` to set up interactively, or add manually.
 
 ### Required: Task Management
 
@@ -150,32 +150,15 @@ Defaults to `docs/plans/` and 400 lines per PR if not specified. `pr-target` is 
 
 ## Platform Differences
 
-This guide uses Claude Code syntax (`/phlight:architect`, `/phlight:fast`, etc.) throughout because it's cleaner to read. If you're on OpenCode, here's what's different.
+Skill names use hyphens (`/phlight-architect`, `/phlight-fast`, etc.) on both Claude Code and OpenCode.
 
-### Invoking skills
+### OpenCode invocation
 
-| Claude Code | OpenCode |
-|---|---|
-| `/phlight:architect my feature` | Type `/skills`, pick `phlight-architect` from the modal, then type your args |
-| `/phlight:fast fix the bug` | Same: `/skills` -> pick `phlight-fast` -> type args |
-| `/phlight:task list --mine` | Same: `/skills` -> pick `phlight-task` -> type `list --mine` |
-
-Yeah, it's clunky. OpenCode doesn't support direct `/skill-name args` invocation (yet). Your alternatives:
+OpenCode doesn't support direct `/skill-name args` invocation (yet). Your alternatives:
 
 - **Just tell the agent in plain English:** "use phlight-implement on docs/plans/2026-03-30-feature.md --auto" works perfectly. The agent calls the skill tool behind the scenes.
 - **Use `/skills` picker:** Type `/skills`, start typing `phlight-`, select the skill, then enter your arguments.
 - **Let auto-chaining do the work:** Once you kick off the first skill (e.g. architect with `--auto`), the chain handles all subsequent skill invocations for you. You only need to manually invoke the first one.
-
-### Skill names
-
-| Claude Code | OpenCode |
-|---|---|
-| `phlight:architect` | `phlight-architect` |
-| `phlight:implement` | `phlight-implement` |
-| `superpowers:brainstorming` | `brainstorming` |
-| `pr-review-toolkit:code-reviewer` | `code-reviewer` |
-
-Claude Code uses colon-separated plugin namespaces. OpenCode uses hyphenated names with no namespace separator.
 
 ### Config file locations
 
@@ -192,48 +175,48 @@ The config sections themselves (`## Task Management`, `## Quality Gates`, `## Pl
 ### "I have a feature idea and want it done"
 
 ```
-/phlight:architect add CSV export to reports --auto --noconfirm
+/phlight-architect add CSV export to reports --auto --noconfirm
 ```
 Full autopilot. You'll still approve the plan and test manually, but everything else chains automatically.
 
 ### "I have a feature idea and want to stay hands-on"
 
 ```
-/phlight:architect add CSV export to reports
+/phlight-architect add CSV export to reports
 ```
 Then after approving the plan:
 ```
-/phlight:implement docs/plans/2026-03-30-csv-export.md
+/phlight-implement docs/plans/2026-03-30-csv-export.md
 ```
 Then after testing:
 ```
-/phlight:review
+/phlight-review
 ```
 Then:
 ```
-/phlight:merge
+/phlight-merge
 ```
 
 ### "I already wrote the code, just review and merge it"
 
 ```
-/phlight:review --auto
+/phlight-review --auto
 ```
 
 ### "Quick bug fix, minimal ceremony"
 
 ```
-/phlight:fast fix the off-by-one error in pagination
+/phlight-fast fix the off-by-one error in pagination
 ```
 
 ### "I need to think before I build"
 
 ```
-/phlight:ask what would it take to support multi-tenant auth?
+/phlight-ask what would it take to support multi-tenant auth?
 ```
 
 ### "What's broken in my setup?"
 
 ```
-/phlight:project-init --check
+/phlight-project-init --check
 ```

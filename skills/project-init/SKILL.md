@@ -11,15 +11,24 @@ and configure missing sections through guided setup.
 ## Usage
 
 ```
-/phlight:project-init              # full health check + guided setup
-/phlight:project-init --check      # report only, no changes
+/phlight-project-init              # full health check + guided setup
+/phlight-project-init --check      # report only, no changes
 ```
 
 ## Process
 
 ### Step 1: Scan existing config
 
-Search all loaded CLAUDE.md and rules files for recognized config sections:
+Search project-level CLAUDE.md and rules files for recognized config sections.
+Only check files within the project directory - do not read global user config
+(`~/.claude/CLAUDE.md`) or any files outside the project root.
+
+Files to check:
+- `CLAUDE.md` (project root)
+- `.claude/CLAUDE.md`
+- `.claude/rules/*.md`
+
+Look for these sections:
 
 - `## Task Management`
 - `## Quality Gates`
@@ -86,15 +95,15 @@ Present a status report:
 
 | Skill              | Status  | Blocked By              |
 |--------------------|---------|-------------------------|
-| /phlight:architect | Ready   | -                       |
-| /phlight:implement | Ready   | -                       |
-| /phlight:review    | Ready   | -                       |
-| /phlight:merge     | Blocked | Quality Gates           |
-| /phlight:split     | Ready   | -                       |
-| /phlight:fast      | Blocked | Quality Gates           |
-| /phlight:task      | Ready   | -                       |
-| /phlight:ask       | Ready   | (always ready)          |
-| /phlight:project-init | Ready | (always ready)         |
+| /phlight-architect | Ready   | -                       |
+| /phlight-implement | Ready   | -                       |
+| /phlight-review    | Ready   | -                       |
+| /phlight-merge     | Blocked | Quality Gates           |
+| /phlight-split     | Ready   | -                       |
+| /phlight-fast      | Blocked | Quality Gates           |
+| /phlight-task      | Ready   | -                       |
+| /phlight-ask       | Ready   | (always ready)          |
+| /phlight-project-init | Ready | (always ready)         |
 ```
 
 If `--check` was passed, stop here.

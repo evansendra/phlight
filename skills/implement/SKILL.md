@@ -13,9 +13,9 @@ and this skill appends the execution guidelines.
 ## Usage
 
 ```
-/phlight:implement <plan initiation prompt>
-/phlight:implement <plan path> --auto
-/phlight:implement <plan path> --auto --noconfirm
+/phlight-implement <plan initiation prompt>
+/phlight-implement <plan path> --auto
+/phlight-implement <plan path> --auto --noconfirm
 ```
 
 ## Flags
@@ -74,7 +74,7 @@ appear to be part of a sequence with a parent plan file, emit a visible warning:
 
 > **WARNING:** This plan does not appear to be part of a plan sequence (no
 > parent plan file detected). If this was split from a larger plan via
-> `phlight:split`, the parent plan file may be missing or unlinked. Confirm with
+> `phlight-split`, the parent plan file may be missing or unlinked. Confirm with
 > the user before proceeding.
 
 **FOR AGENTS:** MANUAL TEST INSTRUCTIONS: Whenever stopping for manual testing,
@@ -118,8 +118,8 @@ After the user confirms manual testing passes:
 1. Set task status to "ready for review" (if task tracking is active, via
    subagent)
 
-**If --auto is set:** Invoke `/phlight:review --auto [--noconfirm]`
+**If --auto is set:** Invoke `/phlight-review --auto [--noconfirm]`
 
 **If --auto is not set:** Suggest next step based on change size:
-- If diff exceeds pr-target lines: recommend `/phlight:review` before merge
-- If diff is small/clean: suggest either `/phlight:review` or `/phlight:merge`
+- If diff exceeds pr-target lines: recommend `/phlight-review` before merge
+- If diff is small/clean: suggest either `/phlight-review` or `/phlight-merge`

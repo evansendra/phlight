@@ -8,14 +8,14 @@ argument-hint: <path-to-plan-file> [--auto] [--noconfirm]
 
 Take a large implementation plan and split it into PR-sized plan files. Each
 split file references the parent plan and is independently consumable by
-`phlight:implement`.
+`phlight-implement`.
 
 ## Usage
 
 ```
-/phlight:split <path-to-plan-file>
-/phlight:split <path-to-plan-file> --auto
-/phlight:split <path-to-plan-file> --auto --noconfirm
+/phlight-split <path-to-plan-file>
+/phlight-split <path-to-plan-file> --auto
+/phlight-split <path-to-plan-file> --auto --noconfirm
 ```
 
 ## Flags
@@ -48,7 +48,7 @@ If `tool: none`, skip task ID inclusion.
 
 ## Scope Boundary
 
-**Do NOT** modify the parent plan, invoke `phlight:implement`, execute any code,
+**Do NOT** modify the parent plan, invoke `phlight-implement`, execute any code,
 create worktrees/branches, or update task statuses. The job ends when split plan
 files are written. Plan files are local-only, never committed to git.
 
@@ -186,9 +186,9 @@ default `docs/plans/`).
 Announce absolute file paths with an execution map showing recommended order
 and parallel lanes.
 
-**If --auto is set:** Invoke `/phlight:implement {first-split-plan-path} --auto
+**If --auto is set:** Invoke `/phlight-implement {first-split-plan-path} --auto
 [--noconfirm]`
 
-**If --auto is not set:** Suggest running `/phlight:implement` for the first plan.
+**If --auto is not set:** Suggest running `/phlight-implement` for the first plan.
 
 Do NOT commit plan files.

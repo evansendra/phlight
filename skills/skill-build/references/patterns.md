@@ -76,10 +76,8 @@ sections. A multi-component feature doesn't deserve two sentences.
 
 Every SKILL.md must include:
 - `name`: prefixed with `phlight-`, matching the directory name with prefix
-  (e.g. directory `architect/` gets `name: phlight-architect`). This is required
-  for OpenCode compatibility. Claude Code derives the display name from the
-  directory and prepends the plugin namespace (`phlight:`), so the `name` field
-  does not affect Claude Code's naming.
+  (e.g. directory `architect/` gets `name: phlight-architect`). The `name` field
+  determines the invocation syntax in Claude Code.
 - `description`: specific enough for agents to select the skill appropriately
 
 Optional:
@@ -96,7 +94,7 @@ context. Do not silently skip integrations or gracefully degrade. The pattern:
 3. If absent, STOP immediately with a clear error:
    - Name the missing section(s)
    - Show the minimum config needed
-   - Direct the user to `/phlight:project-init` for guided setup
+   - Direct the user to `/phlight-project-init` for guided setup
    - List the scope options (project, per-user-per-project, global user)
 
 This is a one-time cost per project. Once configured, the skill works every

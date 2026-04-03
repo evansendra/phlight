@@ -17,8 +17,8 @@ manually - the entire flow runs in one session with minimal human stops.
 ## Usage
 
 ```
-/phlight:fast <description or task-id>
-/phlight:fast <description or task-id> --noconfirm
+/phlight-fast <description or task-id>
+/phlight-fast <description or task-id> --noconfirm
 ```
 
 ## Flags
@@ -136,6 +136,6 @@ change requires architectural decisions, estimating the diff will exceed
 `pr-target` from `## Plans` config), stop and tell the user:
 
 > This is growing beyond quick-fix scope. Consider switching to the full
-> pipeline: `/phlight:architect <description>`
+> pipeline: `/phlight-architect <description>`
 
 Do not continue expanding a fast-mode session into a large feature.
