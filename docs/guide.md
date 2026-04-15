@@ -56,6 +56,15 @@ You can attach `--auto` at any entry point:
 
 Skips the merge confirmation step. Only affects the final merge - all other human stops (plan approval, manual testing) are always enforced. Gets passed forward through the chain when combined with `--auto`.
 
+### `--help`
+
+Every skill accepts `--help` (also `-h`, `-help`, `--h`, `help`, `h`) to print its usage screen and exit without running. Handy when you forget which flags a skill takes or what its prerequisites are.
+
+```
+/phlight-architect --help
+/phlight-task create --help
+```
+
 ## Human Stops
 
 These are the moments where the pipeline always pauses and waits for you, even in `--auto` mode. This is by design - agents handle execution, you handle judgment.

@@ -15,6 +15,31 @@ and configure missing sections through guided setup.
 /phlight-project-init --check      # report only, no changes
 ```
 
+## Help
+
+If `$ARGUMENTS` (trimmed) exactly matches one of `--help`, `-h`, `-help`,
+`--h`, `help`, or `h`, print the help screen below and stop. Do not run any
+other step.
+
+```
+phlight-project-init - detect, report, and configure project context
+
+Usage:
+  /phlight-project-init              full health check and guided setup
+  /phlight-project-init --check      report only, no changes
+
+Flags:
+  --check                 report config/tool/skill status without changes
+  --help, -h, help        show this help screen
+
+Prerequisites:
+  None
+
+Scans project-level CLAUDE.md and rules files for recognized config sections
+(## Task Management, ## Quality Gates, ## Plans), auto-detects defaults,
+reports skill readiness, and optionally guides you through missing setup.
+```
+
 ## Process
 
 ### Step 1: Scan existing config

@@ -13,6 +13,36 @@ Before starting, read `references/patterns.md` for the phlight plugin's design
 patterns. Every decision in this workflow should be consistent with those
 patterns.
 
+## Usage
+
+```
+/phlight-skill-build
+/phlight-skill-build <idea or description>
+```
+
+## Help
+
+If `$ARGUMENTS` (trimmed) exactly matches one of `--help`, `-h`, `-help`,
+`--h`, `help`, or `h`, print the help screen below and stop. Do not run any
+other step.
+
+```
+phlight-skill-build - interactive builder for new phlight skills
+
+Usage:
+  /phlight-skill-build
+  /phlight-skill-build <idea or description>
+
+Flags:
+  --help, -h, help        show this help screen
+
+Prerequisites:
+  None (reads references/patterns.md for plugin conventions)
+
+Guides you through discovery, design, plan presentation, and implementation
+one chunk at a time.
+```
+
 ## Phase 1: Discovery
 
 Start by understanding what the user wants. Ask focused questions, but don't

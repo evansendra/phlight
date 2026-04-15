@@ -30,6 +30,8 @@ architect -> split (if needed) -> implement -> review -> merge
 
 Use `--auto` to chain the full pipeline. Required human stops (plan approval, manual testing, merge confirmation) are always respected.
 
+Every skill accepts `--help` (also `-h`, `help`) to print its usage screen and exit without running.
+
 ## Installation
 
 ### Dependencies

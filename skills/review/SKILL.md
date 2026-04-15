@@ -18,6 +18,33 @@ PR is tight, clean, and free of unnecessary baggage.
 /phlight-review --auto --noconfirm
 ```
 
+## Help
+
+If `$ARGUMENTS` (trimmed) exactly matches one of `--help`, `-h`, `-help`,
+`--h`, `help`, or `h`, print the help screen below and stop. Do not run any
+other step.
+
+```
+phlight-review - opinionated PR fitness review
+
+Usage:
+  /phlight-review
+  /phlight-review --auto
+  /phlight-review --auto --noconfirm
+
+Flags:
+  --auto                  if verdict is CLEAN, auto-chain to merge
+  --noconfirm             propagated forward, skips merge confirmation
+  --help, -h, help        show this help screen
+
+Prerequisites:
+  Required: ## Task Management
+
+Reviews the full diff for PR fitness (not lint/test correctness): bloat,
+dead code, anti-patterns, simplification opportunities. Emits a CLEAN or
+NEEDS CHANGES verdict and a pre-merge sanity checklist.
+```
+
 ## Flags
 
 Parse and strip from `$ARGUMENTS` before processing:

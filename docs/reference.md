@@ -2,6 +2,8 @@
 
 Quick reference for all phlight skills. For detailed explanations, see the [User Guide](guide.md).
 
+> Every skill accepts `--help` (also `-h`, `-help`, `--h`, `help`, `h`) to print a usage screen and exit without running.
+
 ---
 
 ## architect

@@ -21,6 +21,36 @@ is understanding, not action.
 /phlight-ask should we prioritize X or Y?
 ```
 
+## Help
+
+If `$ARGUMENTS` (trimmed) exactly matches one of `--help`, `-h`, `-help`,
+`--h`, `help`, or `h`, print the help screen below and stop. Do not run any
+other step. Any question that merely contains the word "help" (e.g. "how
+does help work here?") is NOT a help invocation - only exact matches of the
+tokens above trigger help.
+
+```
+phlight-ask - conversational Q&A about the project (read-only)
+
+Usage:
+  /phlight-ask <question or topic>
+
+Examples:
+  /phlight-ask how does the sync service handle rate limiting?
+  /phlight-ask what features are planned but not yet implemented?
+  /phlight-ask triage this bug: users see a blank screen after login
+  /phlight-ask should we prioritize X or Y?
+
+Flags:
+  --help, -h, help        show this help screen
+
+Prerequisites:
+  None (uses ## Task Management if configured, read-only)
+
+Strictly read-only: does not write files, create tasks, modify git state, or
+invoke skills that produce artifacts
+```
+
 ## No Prerequisites
 
 This skill has no required config sections. It works with whatever context is

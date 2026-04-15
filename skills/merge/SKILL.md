@@ -18,6 +18,33 @@ manually and wants it merged into the codebase.
 /phlight-merge --auto --noconfirm
 ```
 
+## Help
+
+If `$ARGUMENTS` (trimmed) exactly matches one of `--help`, `-h`, `-help`,
+`--h`, `help`, or `h`, print the help screen below and stop. Do not run any
+other step.
+
+```
+phlight-merge - create PR, wait for checks, merge, cleanup
+
+Usage:
+  /phlight-merge
+  /phlight-merge --noconfirm
+  /phlight-merge --auto
+  /phlight-merge --auto --noconfirm
+
+Flags:
+  --auto                  auto-chain to implement for next split plan
+  --noconfirm             skip human confirmation before merging
+  --help, -h, help        show this help screen
+
+Prerequisites:
+  Required: ## Task Management, ## Quality Gates
+
+Runs quality gates locally, creates a PR with gh, waits for checks, merges
+(squash), cleans up the local worktree/branch, and updates the task tracker.
+```
+
 ## Flags
 
 Parse and strip from `$ARGUMENTS` before processing:

@@ -21,6 +21,31 @@ manually - the entire flow runs in one session with minimal human stops.
 /phlight-fast <description or task-id> --noconfirm
 ```
 
+## Help
+
+If `$ARGUMENTS` (trimmed) exactly matches one of `--help`, `-h`, `-help`,
+`--h`, `help`, or `h`, print the help screen below and stop. Do not run any
+other step.
+
+```
+phlight-fast - condensed single-session workflow for small changes
+
+Usage:
+  /phlight-fast <description or task-id>
+  /phlight-fast <description or task-id> --noconfirm
+
+Flags:
+  --noconfirm             skip merge confirmation at the end
+  --help, -h, help        show this help screen
+
+Prerequisites:
+  Required: ## Task Management, ## Quality Gates
+
+Runs task tracking, quick scope, implementation, quality gates, code review,
+PR, and merge in one session. Use for bug fixes, chores, and small features.
+For larger work, use /phlight-architect instead.
+```
+
 ## Flags
 
 - `--noconfirm`: skip merge confirmation at the end

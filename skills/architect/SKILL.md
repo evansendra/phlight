@@ -17,6 +17,33 @@ with the user. Implementation is handled separately.
 /phlight-architect <task description> --auto --noconfirm
 ```
 
+## Help
+
+If `$ARGUMENTS` (trimmed) exactly matches one of `--help`, `-h`, `-help`,
+`--h`, `help`, or `h`, print the help screen below and stop. Do not run any
+other step.
+
+```
+phlight-architect - brainstorm and plan implementation interactively
+
+Usage:
+  /phlight-architect <task description or context>
+  /phlight-architect <task description> --auto
+  /phlight-architect <task description> --auto --noconfirm
+
+Flags:
+  --auto                  auto-chain to split or implement at completion
+  --noconfirm             propagated forward, skips merge confirmation
+  --help, -h, help        show this help screen
+
+Prerequisites:
+  Required: ## Task Management
+  Optional: ## Plans (defaults to docs/plans/, pr-target 400)
+
+Produces a plan file in the configured plans directory, then hands off to
+/phlight-split or /phlight-implement
+```
+
 ## Flags
 
 Parse and strip from `$ARGUMENTS` before processing:

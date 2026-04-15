@@ -18,6 +18,33 @@ and this skill appends the execution guidelines.
 /phlight-implement <plan path> --auto --noconfirm
 ```
 
+## Help
+
+If `$ARGUMENTS` (trimmed) exactly matches one of `--help`, `-h`, `-help`,
+`--h`, `help`, or `h`, print the help screen below and stop. Do not run any
+other step.
+
+```
+phlight-implement - inject standard execution instructions for a plan
+
+Usage:
+  /phlight-implement <plan initiation prompt>
+  /phlight-implement <plan path> --auto
+  /phlight-implement <plan path> --auto --noconfirm
+
+Flags:
+  --auto                  auto-chain to review after manual test passes
+  --noconfirm             propagated forward, skips merge confirmation
+  --help, -h, help        show this help screen
+
+Prerequisites:
+  Required: ## Task Management
+  Optional: ## Plans (for pr-target, default 400)
+
+Appends execution guidelines to the user's plan initiation message: task
+tracking, plan review, worktree conventions, and manual test instructions.
+```
+
 ## Flags
 
 Parse and strip from `$ARGUMENTS` before processing:

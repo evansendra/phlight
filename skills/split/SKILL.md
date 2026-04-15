@@ -18,6 +18,33 @@ split file references the parent plan and is independently consumable by
 /phlight-split <path-to-plan-file> --auto --noconfirm
 ```
 
+## Help
+
+If `$ARGUMENTS` (trimmed) exactly matches one of `--help`, `-h`, `-help`,
+`--h`, `help`, or `h`, print the help screen below and stop. Do not run any
+other step.
+
+```
+phlight-split - split a large plan into PR-sized plan files
+
+Usage:
+  /phlight-split <path-to-plan-file>
+  /phlight-split <path-to-plan-file> --auto
+  /phlight-split <path-to-plan-file> --auto --noconfirm
+
+Flags:
+  --auto                  skip per-PR approval, auto-chain to implement first
+  --noconfirm             propagated forward, skips merge confirmation
+  --help, -h, help        show this help screen
+
+Prerequisites:
+  Required: ## Task Management
+  Optional: ## Plans (defaults to docs/plans/, pr-target 400)
+
+Splits a large plan into PR-sized plan files, each independently consumable
+by /phlight-implement. Plan files are local-only (never committed).
+```
+
 ## Flags
 
 Parse and strip from `$ARGUMENTS` before processing:
