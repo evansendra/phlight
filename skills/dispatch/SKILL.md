@@ -198,17 +198,26 @@ all human stops in the phlight skill with the following rules:
   send a QUESTION via the report protocol below and STOP
 
 ## Report Protocol
-All communication goes through tmux.
+All communication goes through tmux send-keys. CRITICAL: every send-keys
+command MUST end with the literal word `Enter` (unquoted, outside the
+double quotes). This is a tmux key name that presses the Return key. Without
+it the text sits in the input buffer and is never submitted. The overseer
+will not see your message.
 
-- Progress: tmux send-keys -t {overseer} "PROGRESS: {branch-name} - <step summary>" Enter
+Correct:   `tmux send-keys -t {overseer} "DONE: branch" Enter`
+WRONG:     `tmux send-keys -t {overseer} "DONE: branch"`
+WRONG:     `tmux send-keys -t {overseer} "DONE: branch\n"`
+WRONG:     `tmux send-keys -t {overseer} "DONE: branch" "Enter"`
+
+- Progress: `tmux send-keys -t {overseer} "PROGRESS: {branch-name} - <step summary>" Enter`
   Send at meaningful milestones (scope approved, implementation done,
   quality gates passed). Not required at every step - use judgment
-- Done: tmux send-keys -t {overseer} "DONE: {branch-name}" Enter
+- Done: `tmux send-keys -t {overseer} "DONE: {branch-name}" Enter`
   Send after the phlight skill completes successfully (PR created or
   ready for review, depending on the skill)
-- Question: tmux send-keys -t {overseer} "QUESTION: {branch-name} - <your question>" Enter
+- Question: `tmux send-keys -t {overseer} "QUESTION: {branch-name} - <your question>" Enter`
   Then STOP and WAIT for a response before proceeding
-- Problem: tmux send-keys -t {overseer} "PROBLEM: {branch-name} - <description>" Enter
+- Problem: `tmux send-keys -t {overseer} "PROBLEM: {branch-name} - <description>" Enter`
   Then STOP and WAIT for instructions
 ```
 

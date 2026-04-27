@@ -1,6 +1,6 @@
 {
   "name": "phlight",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Structured development workflow - architect, implement, review, merge with task tracking, quality gates, and auto-chaining",
   "author": {
     "name": "Evan"
