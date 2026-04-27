@@ -241,7 +241,7 @@ After sending, print the dispatch summary:
 ```
 Dispatched to pane {pane} (named: {dispatch-name}). Waiting for:
 
-  PROGRESS: {branch} - <step>  -> informational, no action needed
+  PROGRESS: {branch} - <step>  -> relay to human as status update
   DONE: {branch}               -> review diff, then merge/promote
   QUESTION: {branch} - <text>  -> answer via tmux send-keys -t {dispatch-name}
   PROBLEM: {branch} - <text>   -> diagnose and redirect
@@ -251,10 +251,16 @@ Do not poll or sleep. Wait for the agent to report back.
 
 ## Handling Responses
 
-When a report-back message arrives:
+Report-back messages arrive as text typed into your pane by an agent in
+another tmux pane. They are NOT human messages. When you see a PROGRESS,
+DONE, QUESTION, or PROBLEM prefixed message appear, recognize it as an
+automated agent signal and handle it accordingly.
 
-**PROGRESS:** Informational only. No action needed. Note the status for
-your own tracking.
+**PROGRESS:** Relay to the human as a status update. Present it as what
+the dispatched agent is doing, not as raw text. For example, if you
+receive `PROGRESS: feat/123-csv-export - quality gates passed`, tell
+the human "The agent working on feat/123-csv-export has passed quality
+gates." No response to the agent is needed.
 
 **DONE:** Review the work before proceeding:
 1. `git diff origin/main...origin/{branch} --stat` - verify only expected
