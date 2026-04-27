@@ -64,10 +64,11 @@ Parse and strip from `$ARGUMENTS` before processing:
 
 - `--pane <target>`: tmux target pane. Accepts a pane index (`2`), an absolute
   tmux path (`session:window.pane`, e.g. `dev:1.2`), or a pane title set via
-  `select-pane -T`. Default: `1`
+  `select-pane -T`. Default: `1`. Bare numbers are qualified automatically
+  (see "Resolve tmux coordinates" step)
 - `--skill fast|implement`: which phlight skill to use (default: fast)
 - `--overseer <target>`: tmux target for the overseer pane, same formats as
-  `--pane`. Default: `0`
+  `--pane`. Default: `0`. Bare numbers are qualified automatically
 - `--noconfirm`: propagated into the dispatched skill invocation (skips merge
   confirmation in the implementer's session)
 
@@ -83,25 +84,52 @@ headless pane.
 
 Required environment (verify before generating prompt):
 - Active tmux session: `tmux display-message -p '#S'`
-- Target pane exists and is reachable: `tmux display-message -t {pane} -p '#{pane_id}'`
-  (works for index, absolute path, or title)
+- Target pane exists and is reachable (verified after coordinate resolution)
 
 ## Process
 
-### Step 1: Resolve task
+### Step 1: Resolve tmux coordinates
+
+Bare numeric targets (e.g. `--pane 1`) are ambiguous in tmux - it searches
+sessions, then windows, then panes. Resolve the current pane's coordinates
+first, then qualify any bare numbers.
+
+```bash
+tmux display-message -p '#{session_name}:#{window_index}.#{pane_index}'
+```
+
+This returns the fully qualified path of the current pane (e.g. `dev:1.0`).
+Extract `{session}:{window}` as the base prefix.
+
+For each of `--pane` and `--overseer`:
+- If the value is a bare number (e.g. `1`), qualify it as
+  `{session}:{window}.{number}` (e.g. `dev:1.1`)
+- If the value already contains `:` or `.`, use it as-is (it is already
+  qualified)
+- If the value is non-numeric (a pane title), use it as-is
+
+After qualification, verify the target pane exists:
+```bash
+tmux display-message -t {qualified-pane} -p '#{pane_id}'
+```
+
+If the target does not exist, hard-fail with a clear message showing the
+resolved path.
+
+### Step 2: Resolve task
 
 Read `## Task Management` config. If input matches `id-format`, fetch task
 details (title, body, labels) from the configured provider. Otherwise treat
 input as a plain description.
 
-### Step 2: Determine branch name
+### Step 3: Determine branch name
 
 Using `## Task Management` config:
 - Infer type from task context (fix, feat, chore, refactor)
 - Build branch name using configured `branch-format` if available, otherwise
   `{type}/{task-id}-short-description`
 
-### Step 3: Prep environment
+### Step 4: Prep environment
 
 1. Check if `.env` exists at project root. If so, include a copy instruction
    in the dispatch prompt (implementer copies it to worktree after creation)
@@ -109,7 +137,7 @@ Using `## Task Management` config:
    deployment setup the implementer will need. Include relevant sections
    verbatim in the prompt
 
-### Step 4: Name the target pane
+### Step 5: Name the target pane
 
 Assign a unique title to the target pane for unambiguous targeting in
 report-back messages and follow-up dispatches:
@@ -125,7 +153,7 @@ name to the overseer in the confirm step.
 If the pane already has a `dispatch-*` title from a prior dispatch, rename
 it to avoid confusion.
 
-### Step 5: Build dispatch prompt
+### Step 6: Build dispatch prompt
 
 Assemble a single prompt following this template. The phlight skill handles
 all guardrails (quality gates, worktree conventions, task lifecycle, scope
@@ -184,12 +212,12 @@ All communication goes through tmux.
   Then STOP and WAIT for instructions
 ```
 
-### Step 6: Preview and send
+### Step 7: Preview and send
 
 Present the generated prompt to the overseer. After approval:
 
 1. Send via: `tmux send-keys -t {dispatch-name} "{prompt}" Enter`
-   Use the dispatch name assigned in step 4 as the target
+   Use the dispatch name assigned in step 5 as the target
 2. Escape any double quotes in the prompt body before sending
 3. If the prompt is too long for a single tmux send-keys (over ~1500 chars),
    write it to a temp file and have the implementer read it:
@@ -197,7 +225,7 @@ Present the generated prompt to the overseer. After approval:
    `tmux send-keys -t {dispatch-name} "Read /tmp/phlight-dispatch-{dispatch-name}.md and
    execute the task described there" Enter`
 
-### Step 7: Confirm dispatch
+### Step 8: Confirm dispatch
 
 After sending, print the dispatch summary:
 
