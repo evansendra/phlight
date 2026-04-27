@@ -198,26 +198,33 @@ all human stops in the phlight skill with the following rules:
   send a QUESTION via the report protocol below and STOP
 
 ## Report Protocol
-All communication goes through tmux send-keys. CRITICAL: every send-keys
-command MUST end with the literal word `Enter` (unquoted, outside the
-double quotes). This is a tmux key name that presses the Return key. Without
-it the text sits in the input buffer and is never submitted. The overseer
-will not see your message.
+All communication goes through tmux send-keys. CRITICAL: the target pane
+runs a TUI agent (not a raw shell). You must send the text and the Enter
+key as TWO separate commands with a short delay between them, otherwise
+the TUI may swallow the Enter before it finishes processing the text.
 
-Correct:   `tmux send-keys -t {overseer} "DONE: branch" Enter`
-WRONG:     `tmux send-keys -t {overseer} "DONE: branch"`
-WRONG:     `tmux send-keys -t {overseer} "DONE: branch\n"`
-WRONG:     `tmux send-keys -t {overseer} "DONE: branch" "Enter"`
+Pattern (always use this exact form):
+```bash
+tmux send-keys -t {overseer} "MESSAGE" && sleep 0.1 && tmux send-keys -t {overseer} Enter
+```
 
-- Progress: `tmux send-keys -t {overseer} "PROGRESS: {branch-name} - <step summary>" Enter`
+WRONG: `tmux send-keys -t {overseer} "MESSAGE" Enter`  (Enter arrives too fast for TUI)
+WRONG: `tmux send-keys -t {overseer} "MESSAGE\n"`
+WRONG: `tmux send-keys -t {overseer} "MESSAGE" "Enter"`
+
+- Progress:
+  `tmux send-keys -t {overseer} "PROGRESS: {branch-name} - <step summary>" && sleep 0.1 && tmux send-keys -t {overseer} Enter`
   Send at meaningful milestones (scope approved, implementation done,
   quality gates passed). Not required at every step - use judgment
-- Done: `tmux send-keys -t {overseer} "DONE: {branch-name}" Enter`
+- Done:
+  `tmux send-keys -t {overseer} "DONE: {branch-name}" && sleep 0.1 && tmux send-keys -t {overseer} Enter`
   Send after the phlight skill completes successfully (PR created or
   ready for review, depending on the skill)
-- Question: `tmux send-keys -t {overseer} "QUESTION: {branch-name} - <your question>" Enter`
+- Question:
+  `tmux send-keys -t {overseer} "QUESTION: {branch-name} - <your question>" && sleep 0.1 && tmux send-keys -t {overseer} Enter`
   Then STOP and WAIT for a response before proceeding
-- Problem: `tmux send-keys -t {overseer} "PROBLEM: {branch-name} - <description>" Enter`
+- Problem:
+  `tmux send-keys -t {overseer} "PROBLEM: {branch-name} - <description>" && sleep 0.1 && tmux send-keys -t {overseer} Enter`
   Then STOP and WAIT for instructions
 ```
 
@@ -225,14 +232,14 @@ WRONG:     `tmux send-keys -t {overseer} "DONE: branch" "Enter"`
 
 Present the generated prompt to the overseer. After approval:
 
-1. Send via: `tmux send-keys -t {dispatch-name} "{prompt}" Enter`
+1. Send via: `tmux send-keys -t {dispatch-name} "{prompt}" && sleep 0.1 && tmux send-keys -t {dispatch-name} Enter`
    Use the dispatch name assigned in step 5 as the target
 2. Escape any double quotes in the prompt body before sending
 3. If the prompt is too long for a single tmux send-keys (over ~1500 chars),
    write it to a temp file and have the implementer read it:
    write prompt to `/tmp/phlight-dispatch-{dispatch-name}.md`, then send
    `tmux send-keys -t {dispatch-name} "Read /tmp/phlight-dispatch-{dispatch-name}.md and
-   execute the task described there" Enter`
+   execute the task described there" && sleep 0.1 && tmux send-keys -t {dispatch-name} Enter`
 
 ### Step 8: Confirm dispatch
 
@@ -272,7 +279,7 @@ gates." No response to the agent is needed.
 5. If issues found, send corrections back to the implementer
 
 **QUESTION:** Help formulate an answer, then relay it:
-`tmux send-keys -t {dispatch-name} "{answer}" Enter`
+`tmux send-keys -t {dispatch-name} "{answer}" && sleep 0.1 && tmux send-keys -t {dispatch-name} Enter`
 
 **PROBLEM:** Assess severity. Either redirect the implementer with new
 instructions, or take over the work locally.
