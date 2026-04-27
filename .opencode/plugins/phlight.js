@@ -28,6 +28,7 @@ When phlight skills reference tools or other skills, substitute OpenCode equival
 - \`/phlight:merge\` -> \`phlight-merge\`
 - \`/phlight:split\` -> \`phlight-split\`
 - \`/phlight:fast\` -> \`phlight-fast\`
+- \`/phlight:dispatch\` -> \`phlight-dispatch\`
 - \`/phlight:task\` -> \`phlight-task\`
 - \`/phlight:ask\` -> \`phlight-ask\`
 - \`/phlight:project-init\` -> \`phlight-project-init\`

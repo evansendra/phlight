@@ -15,6 +15,7 @@ A shitty little set of workflow skills that aspires to be a controlled, modular 
 | **merge** | Create PR, wait for checks, merge, cleanup |
 | **split** | Break large plans into PR-sized chunks with dependency tracking |
 | **fast** | Condensed single-session workflow for quick fixes |
+| **dispatch** | Send a task to an implementing agent in another tmux pane |
 | **task** | Create, view, and list tasks in your configured provider |
 | **ask** | Read-only Q&A - ideation, triage, architecture questions |
 | **project-init** | Detect and configure project context for all skills |
