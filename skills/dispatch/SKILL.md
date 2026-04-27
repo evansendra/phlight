@@ -94,11 +94,17 @@ Bare numeric targets (e.g. `--pane 1`) are ambiguous in tmux - it searches
 sessions, then windows, then panes. Resolve the current pane's coordinates
 first, then qualify any bare numbers.
 
+IMPORTANT: do NOT use `tmux display-message -p` without a `-t` target.
+That reports the *currently focused* pane, which may be a completely
+different pane if the user has switched focus. Instead, use the `$TMUX_PANE`
+environment variable, which tmux sets per-pane at creation time and always
+identifies the pane this shell is running in, regardless of focus.
+
 ```bash
-tmux display-message -p '#{session_name}:#{window_index}.#{pane_index}'
+tmux display-message -t "$TMUX_PANE" -p '#{session_name}:#{window_index}.#{pane_index}'
 ```
 
-This returns the fully qualified path of the current pane (e.g. `dev:1.0`).
+This returns the fully qualified path of THIS pane (e.g. `dev:1.0`).
 Extract `{session}:{window}` as the base prefix.
 
 For each of `--pane` and `--overseer`:
