@@ -1,14 +1,20 @@
 ---
 name: phlight-dispatch
 description: Send a task to an implementing agent in another tmux pane with communication protocol, env prep, and scope constraints. Use when coordinating multi-agent work across tmux panes
-argument-hint: <task or issue-id> [--pane N] [--skill fast|implement]
+argument-hint: <task or issue-id> [--pane <target>] [--skill fast|implement] [--noconfirm]
 ---
 
 # Dispatch
 
-Send a self-contained task to an implementing agent running in another tmux
-pane. Generates a complete prompt with communication protocol, environment
-setup, scope constraints, and report-back conventions.
+Orchestration skill that sits alongside the main phlight pipeline. The pipeline
+(`architect -> split -> implement -> review -> merge`) runs in a single agent
+session; dispatch sends work to a *separate* agent in another tmux pane, where
+it runs through the same pipeline skills with full guardrails.
+
+Dispatch does not implement anything itself. It generates a self-contained
+prompt that tells the implementer to use a phlight skill (`fast` or `implement`)
+and layers on a non-interactive communication protocol so the implementer never
+blocks on human input.
 
 The implementing agent has zero context from this conversation. The dispatch
 prompt must be entirely self-contained.
@@ -18,7 +24,9 @@ prompt must be entirely self-contained.
 ```
 /phlight-dispatch <task description or issue-id>
 /phlight-dispatch <task description or issue-id> --pane 2
+/phlight-dispatch <task description or issue-id> --pane mysession:1.2
 /phlight-dispatch <task description or issue-id> --skill implement
+/phlight-dispatch <task description or issue-id> --noconfirm
 ```
 
 ## Help
@@ -33,16 +41,20 @@ phlight-dispatch - send a task to an implementing agent in another tmux pane
 Usage:
   /phlight-dispatch <task or issue-id>
   /phlight-dispatch <task or issue-id> --pane 2
+  /phlight-dispatch <task or issue-id> --pane mysession:1.2
   /phlight-dispatch <task or issue-id> --skill implement
+  /phlight-dispatch <task or issue-id> --noconfirm
 
 Flags:
-  --pane N                target tmux pane (default: 1)
+  --pane <target>         tmux pane: number, session:window.pane path,
+                          or pane title (default: 1)
   --skill fast|implement  which phlight skill the implementer uses (default: fast)
-  --overseer N            this pane's number for report-back (default: 0)
+  --overseer <target>     this pane's tmux target for report-back (default: 0)
+  --noconfirm             propagated into the dispatched skill invocation
   --help, -h, help        show this help screen
 
 Prerequisites:
-  Required: ## Task Management
+  Required: ## Task Management, ## Quality Gates
   Required: active tmux session with target pane running a coding agent
 ```
 
@@ -50,18 +62,29 @@ Prerequisites:
 
 Parse and strip from `$ARGUMENTS` before processing:
 
-- `--pane N`: target tmux pane number (default: 1)
+- `--pane <target>`: tmux target pane. Accepts a pane index (`2`), an absolute
+  tmux path (`session:window.pane`, e.g. `dev:1.2`), or a pane title set via
+  `select-pane -T`. Default: `1`
 - `--skill fast|implement`: which phlight skill to use (default: fast)
-- `--overseer N`: this pane's number for report-back (default: 0)
+- `--overseer <target>`: tmux target for the overseer pane, same formats as
+  `--pane`. Default: `0`
+- `--noconfirm`: propagated into the dispatched skill invocation (skips merge
+  confirmation in the implementer's session)
 
 ## Prerequisites
 
 Required config sections (hard-fail if missing):
 - `## Task Management`
+- `## Quality Gates`
+
+The dispatched phlight skill (`fast` or `implement`) requires both of these.
+Validate at dispatch time so the implementer does not hard-fail mid-task in a
+headless pane.
 
 Required environment (verify before generating prompt):
 - Active tmux session: `tmux display-message -p '#S'`
-- Target pane exists: `tmux list-panes -F '#{pane_index}'`
+- Target pane exists and is reachable: `tmux display-message -t {pane} -p '#{pane_id}'`
+  (works for index, absolute path, or title)
 
 ## Process
 
@@ -86,16 +109,43 @@ Using `## Task Management` config:
    deployment setup the implementer will need. Include relevant sections
    verbatim in the prompt
 
-### Step 4: Build dispatch prompt
+### Step 4: Name the target pane
 
-Assemble a single prompt following this template. Adapt the constraints
-section to the specific task - be explicit about what NOT to do based on
-the task scope.
+Assign a unique title to the target pane for unambiguous targeting in
+report-back messages and follow-up dispatches:
+
+```bash
+tmux select-pane -t {pane} -T "dispatch-$(date +%s%3N)"
+```
+
+Record the assigned name. Use it as the canonical target for all subsequent
+`send-keys` commands to this pane (via `-t` with the title). Report the
+name to the overseer in the confirm step.
+
+If the pane already has a `dispatch-*` title from a prior dispatch, rename
+it to avoid confusion.
+
+### Step 5: Build dispatch prompt
+
+Assemble a single prompt following this template. The phlight skill handles
+all guardrails (quality gates, worktree conventions, task lifecycle, scope
+guard). Dispatch adds only the non-interactive overlay.
+
+Adapt the constraints section to the specific task - be explicit about what
+NOT to do based on the task scope.
 
 ```
-Use the phlight:{skill} skill. Task: {task-id} {task-title}
+Use the phlight {skill} skill to complete this task. If you have phlight
+installed, invoke it (e.g. /phlight-{skill} or phlight-{skill}). If you
+do not have phlight installed, do NOT attempt to install it - instead
+follow these steps manually: {one-line summary of what the skill does,
+e.g. "scope the change, create a worktree and branch, implement, run
+quality gates, create a PR" for fast}.
 
-## What
+Task: {task-id} {task-title}
+{--noconfirm if flag was set: "Skip merge confirmation (--noconfirm)"}
+
+## Description
 {task description from issue body or user input}
 
 ## Constraints
@@ -105,44 +155,59 @@ Use the phlight:{skill} skill. Task: {task-id} {task-title}
 - Do NOT touch files outside the stated scope
 
 ## Branch
-{branch-name}
+Use this branch name: {branch-name}
 
 ## Environment
 {auth instructions, .env copy notes, or "No special setup needed"}
 
-## Report Protocol
-All communication goes through tmux. Do NOT present interactive questions,
-confirmations, or prompts - the user is not watching your pane.
+## Non-Interactive Mode
+You are running in a headless tmux pane. No human is watching. Override
+all human stops in the phlight skill with the following rules:
 
+- Do NOT present interactive questions, confirmations, or prompts
+- Do NOT stop for manual testing - run quality gates and report the result
+- When the phlight skill would normally stop for human input, instead
+  send a QUESTION via the report protocol below and STOP
+
+## Report Protocol
+All communication goes through tmux.
+
+- Progress: tmux send-keys -t {overseer} "PROGRESS: {branch-name} - <step summary>" Enter
+  Send at meaningful milestones (scope approved, implementation done,
+  quality gates passed). Not required at every step - use judgment
 - Done: tmux send-keys -t {overseer} "DONE: {branch-name}" Enter
-- Question: tmux send-keys -t {overseer} "QUESTION: <your question>" Enter
-  Then STOP and WAIT for a response before proceeding.
-- Problem: tmux send-keys -t {overseer} "PROBLEM: <description>" Enter
-  Then STOP and WAIT for instructions.
+  Send after the phlight skill completes successfully (PR created or
+  ready for review, depending on the skill)
+- Question: tmux send-keys -t {overseer} "QUESTION: {branch-name} - <your question>" Enter
+  Then STOP and WAIT for a response before proceeding
+- Problem: tmux send-keys -t {overseer} "PROBLEM: {branch-name} - <description>" Enter
+  Then STOP and WAIT for instructions
 ```
 
-### Step 5: Preview and send
+### Step 6: Preview and send
 
 Present the generated prompt to the overseer. After approval:
 
-1. Send via: `tmux send-keys -t {pane} "{prompt}" Enter`
+1. Send via: `tmux send-keys -t {dispatch-name} "{prompt}" Enter`
+   Use the dispatch name assigned in step 4 as the target
 2. Escape any double quotes in the prompt body before sending
 3. If the prompt is too long for a single tmux send-keys (over ~1500 chars),
    write it to a temp file and have the implementer read it:
-   write prompt to `/tmp/phlight-dispatch-{task-id}.md`, then send
-   `tmux send-keys -t {pane} "Read /tmp/phlight-dispatch-{task-id}.md and
+   write prompt to `/tmp/phlight-dispatch-{dispatch-name}.md`, then send
+   `tmux send-keys -t {dispatch-name} "Read /tmp/phlight-dispatch-{dispatch-name}.md and
    execute the task described there" Enter`
 
-### Step 6: Confirm dispatch
+### Step 7: Confirm dispatch
 
-After sending, print the expected report-back messages:
+After sending, print the dispatch summary:
 
 ```
-Dispatched to pane {pane}. Waiting for:
+Dispatched to pane {pane} (named: {dispatch-name}). Waiting for:
 
-  DONE: {branch}      -> review diff, then merge/promote
-  QUESTION: <text>     -> answer via tmux send-keys -t {pane}
-  PROBLEM: <text>      -> diagnose and redirect
+  PROGRESS: {branch} - <step>  -> informational, no action needed
+  DONE: {branch}               -> review diff, then merge/promote
+  QUESTION: {branch} - <text>  -> answer via tmux send-keys -t {dispatch-name}
+  PROBLEM: {branch} - <text>   -> diagnose and redirect
 ```
 
 Do not poll or sleep. Wait for the agent to report back.
@@ -151,42 +216,52 @@ Do not poll or sleep. Wait for the agent to report back.
 
 When a report-back message arrives:
 
+**PROGRESS:** Informational only. No action needed. Note the status for
+your own tracking.
+
 **DONE:** Review the work before proceeding:
 1. `git diff origin/main...origin/{branch} --stat` - verify only expected
    files changed
 2. `git diff origin/main...origin/{branch}` - review the actual diff
 3. `git log origin/{branch} --oneline -5` - check commit messages
-4. If clean, suggest next step (PR to staging, direct merge, etc.)
+4. If clean, suggest next step (merge via `/phlight-merge`, or dispatch
+   merge as a follow-up)
 5. If issues found, send corrections back to the implementer
 
 **QUESTION:** Help formulate an answer, then relay it:
-`tmux send-keys -t {pane} "{answer}" Enter`
+`tmux send-keys -t {dispatch-name} "{answer}" Enter`
 
 **PROBLEM:** Assess severity. Either redirect the implementer with new
 instructions, or take over the work locally.
 
 ## Follow-up Dispatches
 
-Common follow-up tasks after DONE (send as new dispatches to the same pane):
+Common follow-up tasks after DONE. Send as new dispatches to the same pane.
+Route through phlight skills where possible to preserve guardrails.
 
-**Merge + monitor staging:**
+**Merge:**
 ```
-Merge PR #{n} into staging with: gh pr merge {n} --squash. Then monitor
-staging deploy for 5 minutes. {include auth instructions}. If healthy,
-report: tmux send-keys -t {overseer} "STAGING HEALTHY" Enter.
-If problems: tmux send-keys -t {overseer} "STAGING PROBLEM: <desc>" Enter
+Use the phlight merge skill to merge this work. If you have phlight
+installed, invoke it (e.g. /phlight-merge or phlight-merge). If you do
+not have phlight installed, do NOT attempt to install it - instead follow
+these steps manually: run quality gates, create a PR, wait for checks,
+squash-merge, cleanup worktree/branch.
+
+Skip merge confirmation (--noconfirm).
+
+## Non-Interactive Mode
+{same report protocol block as the original dispatch}
+
+Report when done:
+- tmux send-keys -t {overseer} "DONE: merged {branch}" Enter
+- tmux send-keys -t {overseer} "PROBLEM: merge failed - <desc>" Enter
 ```
 
-**Promote staging to main:**
+**Monitor staging/production:**
+These are outside phlight's pipeline scope - use direct instructions:
 ```
-Open a promotion PR from staging to main and merge with --merge (not
---squash). Report: tmux send-keys -t {overseer} "PROMOTED: staging to
-main" Enter
-```
-
-**Monitor production:**
-```
-Monitor production deploy for 5 minutes. {include auth instructions}.
-Report: tmux send-keys -t {overseer} "PROD HEALTHY" Enter or
-tmux send-keys -t {overseer} "PROD PROBLEM: <desc>" Enter
+Monitor {staging|production} deploy for 5 minutes. {include auth
+instructions}. Report:
+- tmux send-keys -t {overseer} "{STAGING|PROD} HEALTHY" Enter
+- tmux send-keys -t {overseer} "{STAGING|PROD} PROBLEM: <desc>" Enter
 ```

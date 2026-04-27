@@ -27,6 +27,8 @@ A shitty little set of workflow skills that aspires to be a controlled, modular 
 architect -> split (if needed) -> implement -> review -> merge
                                       |                    |
                                       +-- next split plan -+
+
+dispatch -----> [another pane runs fast or implement with full guardrails]
 ```
 
 Use `--auto` to chain the full pipeline. Required human stops (plan approval, manual testing, merge confirmation) are always respected.

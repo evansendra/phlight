@@ -91,6 +91,7 @@ Check whether key tools used by phlight skills are available:
 
 - `gh` (used by merge for PR operations)
 - `scc` (used by review for code size snapshots)
+- `tmux` (used by dispatch for multi-agent coordination)
 - `superpowers:*` skills (used by architect, implement)
 - `pr-review-toolkit:*` agents (used by review)
 
@@ -113,6 +114,7 @@ Present a status report:
 |--------------------|--------------|--------------------|
 | gh                 | Available    | merge              |
 | scc                | Available    | review             |
+| tmux               | Available    | dispatch           |
 | superpowers:*      | Available    | architect, implement|
 | pr-review-toolkit  | Available    | review             |
 
@@ -126,6 +128,7 @@ Present a status report:
 | /phlight-merge     | Blocked | Quality Gates           |
 | /phlight-split     | Ready   | -                       |
 | /phlight-fast      | Blocked | Quality Gates           |
+| /phlight-dispatch  | Blocked | Quality Gates, tmux     |
 | /phlight-task      | Ready   | -                       |
 | /phlight-ask       | Ready   | (always ready)          |
 | /phlight-project-init | Ready | (always ready)         |
