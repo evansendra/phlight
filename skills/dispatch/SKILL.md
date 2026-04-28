@@ -290,6 +290,33 @@ gates." No response to the agent is needed.
 **PROBLEM:** Assess severity. Either redirect the implementer with new
 instructions, or take over the work locally.
 
+## Interrupting the Dispatchee
+
+The dispatchee's TUI input is blocked while it executes tools. Sending a
+message via send-keys will just queue behind the current action and won't
+be seen until the tool finishes. To actually interrupt work in progress,
+you must cancel the current operation first by sending multiple rapid
+Escape keys before your message.
+
+Interrupt pattern:
+```bash
+for i in 1 2 3 4 5; do tmux send-keys -t {dispatch-name} Escape; sleep 0.05; done && sleep 0.2 && tmux send-keys -t {dispatch-name} "MESSAGE" && sleep 0.1 && tmux send-keys -t {dispatch-name} Enter
+```
+
+The five Escapes with 50ms gaps ensure at least one lands between tool
+execution cycles and cancels the in-progress action. The 200ms pause
+after the last Escape gives the TUI time to return to its input prompt
+before the message arrives.
+
+Use this when:
+- The overseer (or human) needs to redirect the dispatchee mid-task
+- The dispatchee is going down a wrong path and needs to be stopped
+- Priority has changed and the current task should be abandoned
+
+After interrupting, send clear instructions - the dispatchee may have
+partial work in progress. Either redirect ("stop current work, do X
+instead") or terminate ("stop all work, report what you have so far").
+
 ## Follow-up Dispatches
 
 Common follow-up tasks after DONE. Send as new dispatches to the same pane.
