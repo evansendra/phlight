@@ -195,13 +195,22 @@ Use this branch name: {branch-name}
 {auth instructions, .env copy notes, or "No special setup needed"}
 
 ## Non-Interactive Mode
-You are running in a headless tmux pane. No human is watching. Override
-all human stops in the phlight skill with the following rules:
+CRITICAL: You are running in a headless tmux pane. NO HUMAN IS WATCHING
+YOUR PANE. Nobody will see your output, answer your prompts, or click
+your confirmations. If you present an interactive prompt, question, or
+confirmation dialog, you will be STUCK FOREVER with no response.
 
-- Do NOT present interactive questions, confirmations, or prompts
+Rules:
+- NEVER present interactive questions, confirmations, or prompts in your
+  own pane - nobody is there to answer them
+- NEVER stop and wait for human input in your pane
+- NEVER ask "should I proceed?" or "do you want me to..." in your output
 - Do NOT stop for manual testing - run quality gates and report the result
-- When the phlight skill would normally stop for human input, instead
-  send a QUESTION via the report protocol below and STOP
+- If you need ANY input, decision, or approval: send a QUESTION via the
+  tmux report protocol below, then STOP and WAIT for the answer to arrive
+  as input in your pane (the overseer will send it via tmux send-keys)
+- Use --yes, --force, --noconfirm, or equivalent flags on any CLI command
+  that would otherwise prompt for confirmation
 
 ## Report Protocol
 All communication goes through tmux send-keys. CRITICAL: the target pane
