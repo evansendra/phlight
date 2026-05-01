@@ -13,7 +13,7 @@
         "source": "github",
         "repo": "evansendra/phlight"
       },
-      "description": "Structured development workflow plugin with 10 skills: architect, implement, review, merge, split, fast, task, ask, project-init, skill-build",
+      "description": "Structured development workflow plugin with 11 skills: architect, implement, review, merge, cleanup, split, fast, task, ask, project-init, skill-build",
       "categories": ["workflow", "development"],
       "tags": ["workflow", "architecture", "code-review", "task-tracking", "tdd"]
     }
