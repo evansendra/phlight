@@ -200,19 +200,38 @@ YOUR PANE. Nobody will see your output, answer your prompts, or click
 your confirmations. If you present an interactive prompt, question, or
 confirmation dialog, you will be STUCK FOREVER with no response.
 
+You MUST drive every step to completion autonomously. The ONLY way to
+communicate is the Report Protocol below. Do not output questions,
+confirmations, or status updates into your own pane expecting a reader -
+there is none.
+
 Rules:
 - NEVER present interactive questions, confirmations, or prompts in your
   own pane - nobody is there to answer them
 - NEVER stop and wait for human input in your pane
 - NEVER ask "should I proceed?" or "do you want me to..." in your output
+- NEVER present a choice ("option A or option B?") - make the decision
+  yourself based on the task description and constraints
 - Do NOT stop for manual testing - run quality gates and report the result
-- If you need ANY input, decision, or approval: send a QUESTION via the
-  tmux report protocol below, then STOP and WAIT for the answer to arrive
-  as input in your pane (the overseer will send it via tmux send-keys)
-- Use --yes, --force, --noconfirm, or equivalent flags on any CLI command
-  that would otherwise prompt for confirmation
+- Do NOT ask for approval before creating branches, worktrees, commits,
+  or PRs - these are expected actions, just do them
+- Do NOT ask for confirmation before running tests, linters, or formatters
+- Do NOT pause after presenting a plan or scope - approve it yourself and
+  continue immediately
+- If a CLI command prompts for confirmation (y/n), use --yes, --force,
+  --noconfirm, -y, or equivalent flags to bypass it
+- If a phlight skill asks for manual test confirmation, skip it (you
+  cannot manually test) and proceed based on quality gate results
+- If you hit an ambiguous decision where you genuinely cannot proceed
+  without external input, send a QUESTION via the Report Protocol below,
+  then STOP and WAIT for the answer to arrive as input in your pane
 
-## Report Protocol
+## Report Protocol (MANDATORY)
+Your overseer is waiting in another tmux pane for your status. Reporting
+is NOT optional. If you finish work without sending a DONE message, the
+overseer will never know you completed the task. If you hit a blocker
+without sending a PROBLEM message, nobody will come help you.
+
 All communication goes through tmux send-keys. CRITICAL: the target pane
 runs a TUI agent (not a raw shell). You must send the text and the Enter
 key as TWO separate commands with a short delay between them, otherwise
@@ -223,24 +242,27 @@ Pattern (always use this exact form):
 tmux send-keys -t {overseer} "MESSAGE" && sleep 0.1 && tmux send-keys -t {overseer} Enter
 ```
 
-WRONG: `tmux send-keys -t {overseer} "MESSAGE" Enter`  (Enter arrives too fast for TUI)
-WRONG: `tmux send-keys -t {overseer} "MESSAGE\n"`
-WRONG: `tmux send-keys -t {overseer} "MESSAGE" "Enter"`
+WRONG (do NOT use these):
+- `tmux send-keys -t {overseer} "MESSAGE" Enter`  (Enter arrives too fast)
+- `tmux send-keys -t {overseer} "MESSAGE\n"`
+- `tmux send-keys -t {overseer} "MESSAGE" "Enter"`
 
-- Progress:
+Message types:
+- PROGRESS (send at meaningful milestones - scope done, implementation
+  done, quality gates passed):
   `tmux send-keys -t {overseer} "PROGRESS: {branch-name} - <step summary>" && sleep 0.1 && tmux send-keys -t {overseer} Enter`
-  Send at meaningful milestones (scope approved, implementation done,
-  quality gates passed). Not required at every step - use judgment
-- Done:
+- DONE (MANDATORY - send exactly once when the task is complete):
   `tmux send-keys -t {overseer} "DONE: {branch-name}" && sleep 0.1 && tmux send-keys -t {overseer} Enter`
-  Send after the phlight skill completes successfully (PR created or
-  ready for review, depending on the skill)
-- Question:
+- QUESTION (only when you genuinely cannot proceed):
   `tmux send-keys -t {overseer} "QUESTION: {branch-name} - <your question>" && sleep 0.1 && tmux send-keys -t {overseer} Enter`
   Then STOP and WAIT for a response before proceeding
-- Problem:
+- PROBLEM (unrecoverable error or blocker):
   `tmux send-keys -t {overseer} "PROBLEM: {branch-name} - <description>" && sleep 0.1 && tmux send-keys -t {overseer} Enter`
   Then STOP and WAIT for instructions
+
+Every task MUST end with exactly one of: DONE, PROBLEM, or QUESTION.
+If you complete the work without sending one of these, you have failed
+the protocol.
 ```
 
 ### Step 7: Preview and send
@@ -284,14 +306,21 @@ receive `PROGRESS: feat/123-csv-export - quality gates passed`, tell
 the human "The agent working on feat/123-csv-export has passed quality
 gates." No response to the agent is needed.
 
-**DONE:** Review the work before proceeding:
+**DONE:** Review the work, get human approval, and drive the merge:
 1. `git diff origin/main...origin/{branch} --stat` - verify only expected
    files changed
 2. `git diff origin/main...origin/{branch}` - review the actual diff
 3. `git log origin/{branch} --oneline -5` - check commit messages
-4. If clean, suggest next step (merge via `/phlight-merge`, or dispatch
-   merge as a follow-up)
-5. If issues found, send corrections back to the implementer
+4. Present a summary to the human: what changed, any concerns, and a clear
+   approval prompt ("Approve merge?" or similar)
+5. **If the human rejects or requests changes:** send corrections back to
+   the implementer via the interrupt or send-keys pattern
+6. **If the human approves:** dispatch the merge follow-up to the same pane
+   using the Merge template from "Follow-up Dispatches" below. The merge
+   skill handles all downstream follow-ups: quality gates, PR creation, CI
+   checks, squash-merge, worktree/branch cleanup, and task tracker update
+   (marking the task done and commenting the PR URL). Always pass
+   `--noconfirm` in the merge dispatch since the human already approved here
 
 **QUESTION:** Help formulate an answer, then relay it:
 `tmux send-keys -t {dispatch-name} "{answer}" && sleep 0.1 && tmux send-keys -t {dispatch-name} Enter`
@@ -328,8 +357,10 @@ instead") or terminate ("stop all work, report what you have so far").
 
 ## Follow-up Dispatches
 
-Common follow-up tasks after DONE. Send as new dispatches to the same pane.
-Route through phlight skills where possible to preserve guardrails.
+Follow-up tasks dispatched to the same pane after DONE. Route through phlight
+skills where possible to preserve guardrails. The merge follow-up is dispatched
+automatically after human approval in the DONE handler - the others are
+dispatched at the overseer's discretion.
 
 **Merge:**
 ```
@@ -342,18 +373,26 @@ squash-merge, cleanup worktree/branch.
 Skip merge confirmation (--noconfirm).
 
 ## Non-Interactive Mode
-{same report protocol block as the original dispatch}
+{same non-interactive and report protocol blocks as the original dispatch}
 
-Report when done:
-- tmux send-keys -t {overseer} "DONE: merged {branch}" Enter
-- tmux send-keys -t {overseer} "PROBLEM: merge failed - <desc>" Enter
+You MUST report back when done. Use this exact pattern:
+tmux send-keys -t {overseer} "MESSAGE" && sleep 0.1 && tmux send-keys -t {overseer} Enter
+
+Send exactly one of:
+- "DONE: merged {branch}"
+- "PROBLEM: merge failed - <desc>"
 ```
 
 **Monitor staging/production:**
 These are outside phlight's pipeline scope - use direct instructions:
 ```
 Monitor {staging|production} deploy for 5 minutes. {include auth
-instructions}. Report:
-- tmux send-keys -t {overseer} "{STAGING|PROD} HEALTHY" Enter
-- tmux send-keys -t {overseer} "{STAGING|PROD} PROBLEM: <desc>" Enter
+instructions}.
+
+You MUST report back when done. Use this exact pattern:
+tmux send-keys -t {overseer} "MESSAGE" && sleep 0.1 && tmux send-keys -t {overseer} Enter
+
+Send exactly one of:
+- "{STAGING|PROD} HEALTHY"
+- "{STAGING|PROD} PROBLEM: <desc>"
 ```
