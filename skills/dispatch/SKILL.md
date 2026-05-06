@@ -96,6 +96,10 @@ Required environment (verify before generating prompt):
 
 ### Step 1: Resolve tmux coordinates
 
+ALWAYS run this step fresh. Do NOT reuse coordinates from a previous dispatch
+in this conversation - the user may have rearranged panes, split windows, or
+changed layouts since then. Re-resolve every time.
+
 Bare numeric targets (e.g. `--pane 1`) are ambiguous in tmux - it searches
 sessions, then windows, then panes. Resolve the current pane's coordinates
 first, then qualify any bare numbers.
