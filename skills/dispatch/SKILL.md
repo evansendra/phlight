@@ -1,7 +1,7 @@
 ---
 name: phlight-dispatch
 description: Send a task to an implementing agent in another tmux pane with communication protocol, env prep, and scope constraints. Use when coordinating multi-agent work across tmux panes
-argument-hint: <task or issue-id> [--pane <target>] [--skill fast|implement] [--noconfirm]
+argument-hint: <task, issue-id, or question> [--pane <target>] [--skill fast|implement|ask] [--noconfirm]
 ---
 
 # Dispatch
@@ -11,13 +11,13 @@ Orchestration skill that sits alongside the main phlight pipeline. The pipeline
 session; dispatch sends work to a *separate* agent in another tmux pane, where
 it runs through the same pipeline skills with full guardrails.
 
-Dispatch does not implement anything itself. It generates a self-contained
-prompt that tells the implementer to use a phlight skill (`fast` or `implement`)
-and layers on a non-interactive communication protocol so the implementer never
-blocks on human input.
+Dispatch does not implement or answer anything itself. It generates a
+self-contained prompt that tells the target agent to use a phlight skill
+(`fast`, `implement`, or `ask`) and layers on a non-interactive communication
+protocol so the agent never blocks on human input.
 
-The implementing agent has zero context from this conversation. The dispatch
-prompt must be entirely self-contained.
+The target agent has zero context from this conversation. The dispatch prompt
+must be entirely self-contained.
 
 ## Usage
 
@@ -27,6 +27,8 @@ prompt must be entirely self-contained.
 /phlight-dispatch <task description or issue-id> --pane mysession:1.2
 /phlight-dispatch <task description or issue-id> --skill implement
 /phlight-dispatch <task description or issue-id> --noconfirm
+/phlight-dispatch how does the sync pipeline handle retries?
+/phlight-dispatch what auth middleware do we use and how is it configured?
 ```
 
 ## Help
@@ -48,13 +50,15 @@ Usage:
 Flags:
   --pane <target>         tmux pane: number, session:window.pane path,
                           or pane title (default: 1)
-  --skill fast|implement  which phlight skill the implementer uses (default: fast)
+  --skill fast|implement|ask
+                          which phlight skill the target uses (default: auto-
+                          detected - ask for questions/research, fast otherwise)
   --overseer <target>     this pane's tmux target for report-back (default: 0)
   --noconfirm             propagated into the dispatched skill invocation
   --help, -h, help        show this help screen
 
 Prerequisites:
-  Required: ## Task Management, ## Quality Gates
+  Required (fast/implement only): ## Task Management, ## Quality Gates
   Required: active tmux session with target pane running a coding agent
 ```
 
@@ -66,7 +70,10 @@ Parse and strip from `$ARGUMENTS` before processing:
   tmux path (`session:window.pane`, e.g. `dev:1.2`), or a pane title set via
   `select-pane -T`. Default: `1`. Bare numbers are qualified automatically
   (see "Resolve tmux coordinates" step)
-- `--skill fast|implement`: which phlight skill to use (default: fast)
+- `--skill fast|implement|ask`: which phlight skill to use. If omitted,
+  auto-detect from the input: questions, research, exploration, "how does X
+  work", "what is Y" -> `ask`; actionable tasks, issue IDs, implementation
+  requests -> `fast`
 - `--overseer <target>`: tmux target for the overseer pane, same formats as
   `--pane`. Default: `0`. Bare numbers are qualified automatically
 - `--noconfirm`: propagated into the dispatched skill invocation (skips merge
@@ -74,13 +81,12 @@ Parse and strip from `$ARGUMENTS` before processing:
 
 ## Prerequisites
 
-Required config sections (hard-fail if missing):
+Required config sections for `fast` and `implement` (hard-fail if missing):
 - `## Task Management`
 - `## Quality Gates`
 
-The dispatched phlight skill (`fast` or `implement`) requires both of these.
-Validate at dispatch time so the implementer does not hard-fail mid-task in a
-headless pane.
+Validate at dispatch time so the agent does not hard-fail mid-task in a
+headless pane. These are NOT required for `ask` dispatches.
 
 Required environment (verify before generating prompt):
 - Active tmux session: `tmux display-message -p '#S'`
@@ -122,20 +128,36 @@ tmux display-message -t {qualified-pane} -p '#{pane_id}'
 If the target does not exist, hard-fail with a clear message showing the
 resolved path.
 
-### Step 2: Resolve task
+### Step 2: Determine skill
+
+If `--skill` was explicitly set, use it. Otherwise, classify the input:
+
+- **ask**: the input is a question, research request, or exploration topic.
+  Signals: question marks, "how does", "what is", "why does", "explain",
+  "investigate", "compare", "what are the options for", or any input where the
+  goal is understanding rather than producing a code change
+- **fast** (default for actionable input): the input describes work to be done,
+  references an issue/task ID, or requests implementation, fixing, refactoring,
+  or building something
+
+If the detected skill is `ask`, skip directly to step 5 (Name the target
+pane). Steps 3 and 4 do not apply - ask dispatches have no branch, no
+worktree, no task tracking, and no environment setup.
+
+### Step 3: Resolve task (fast/implement only)
 
 Read `## Task Management` config. If input matches `id-format`, fetch task
 details (title, body, labels) from the configured provider. Otherwise treat
 input as a plain description.
 
-### Step 3: Determine branch name
+### Step 4: Determine branch name (fast/implement only)
 
 Using `## Task Management` config:
 - Infer type from task context (fix, feat, chore, refactor)
 - Build branch name using configured `branch-format` if available, otherwise
   `{type}/{task-id}-short-description`
 
-### Step 4: Prep environment
+### Step 4b: Prep environment (fast/implement only)
 
 1. Check if `.env` exists at project root. If so, include a copy instruction
    in the dispatch prompt (implementer copies it to worktree after creation)
@@ -160,6 +182,46 @@ If the pane already has a `dispatch-*` title from a prior dispatch, rename
 it to avoid confusion.
 
 ### Step 6: Build dispatch prompt
+
+If the skill is `ask`, use the ask template. Otherwise use the
+fast/implement template.
+
+#### Ask template
+
+```
+Use the phlight ask skill to answer this question. If you have phlight
+installed, invoke it (e.g. /phlight-ask or phlight-ask). If you do not have
+phlight installed, do NOT attempt to install it - instead answer the question
+by reading the codebase, searching, and analyzing. Do NOT create files,
+branches, worktrees, tasks, or modify anything.
+
+## Question
+{user's question or research topic}
+
+## Non-Interactive Mode
+CRITICAL: You are running in a headless tmux pane. NO HUMAN IS WATCHING
+YOUR PANE. Do not ask clarifying questions - do your best with the
+information given. Research thoroughly, then report your findings.
+
+## Report Protocol (MANDATORY)
+Your overseer is waiting in another tmux pane for your answer. Reporting
+is NOT optional.
+
+All communication goes through tmux send-keys. CRITICAL: the target pane
+runs a TUI agent (not a raw shell). You must send the text and the Enter
+key as TWO separate commands with a short delay between them.
+
+Pattern (always use this exact form):
+tmux send-keys -t {overseer} "MESSAGE" && sleep 0.1 && tmux send-keys -t {overseer} Enter
+
+When you have the answer, send:
+tmux send-keys -t {overseer} "DONE: ask - <one-line summary of findings>" && sleep 0.1 && tmux send-keys -t {overseer} Enter
+
+If you cannot answer:
+tmux send-keys -t {overseer} "PROBLEM: ask - <what's blocking>" && sleep 0.1 && tmux send-keys -t {overseer} Enter
+```
+
+#### Fast/implement template
 
 Assemble a single prompt following this template. The phlight skill handles
 all guardrails (quality gates, worktree conventions, task lifecycle, scope
@@ -280,8 +342,9 @@ Present the generated prompt to the overseer. After approval:
 
 ### Step 8: Confirm dispatch
 
-After sending, print the dispatch summary:
+After sending, print the dispatch summary.
 
+For fast/implement:
 ```
 Dispatched to pane {pane} (named: {dispatch-name}). Waiting for:
 
@@ -289,6 +352,14 @@ Dispatched to pane {pane} (named: {dispatch-name}). Waiting for:
   DONE: {branch}               -> review diff, then merge/promote
   QUESTION: {branch} - <text>  -> answer via tmux send-keys -t {dispatch-name}
   PROBLEM: {branch} - <text>   -> diagnose and redirect
+```
+
+For ask:
+```
+Dispatched question to pane {pane} (named: {dispatch-name}). Waiting for:
+
+  DONE: ask - <summary>        -> relay findings to human
+  PROBLEM: ask - <text>        -> diagnose and redirect
 ```
 
 Do not poll or sleep. Wait for the agent to report back.
@@ -306,7 +377,11 @@ receive `PROGRESS: feat/123-csv-export - quality gates passed`, tell
 the human "The agent working on feat/123-csv-export has passed quality
 gates." No response to the agent is needed.
 
-**DONE:** Review the work, get human approval, and drive the merge:
+**DONE (ask):** The agent has finished researching. Relay the findings to the
+human conversationally. No diff review, no merge, no follow-up dispatch.
+
+**DONE (fast/implement):** Review the work, get human approval, and drive the
+merge:
 1. `git diff origin/main...origin/{branch} --stat` - verify only expected
    files changed
 2. `git diff origin/main...origin/{branch}` - review the actual diff

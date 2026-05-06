@@ -1,6 +1,6 @@
 {
   "name": "phlight",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "type": "module",
   "main": ".opencode/plugins/phlight.js"
 }
