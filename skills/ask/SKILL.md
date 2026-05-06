@@ -45,7 +45,7 @@ Flags:
   --help, -h, help        show this help screen
 
 Prerequisites:
-  None (uses ## Task Management if configured, read-only)
+  None
 
 Strictly read-only: does not write files, create tasks, modify git state, or
 invoke skills that produce artifacts
@@ -54,9 +54,11 @@ invoke skills that produce artifacts
 ## No Prerequisites
 
 This skill has no required config sections. It works with whatever context is
-available. If `## Task Management` is configured, it can fetch task info from
-the provider for prioritization and triage discussions. If not, it works purely
-from codebase and conversation context.
+available - codebase, conversation, web search, documentation. If the user's
+question is specifically about tasks or priorities and `## Task Management` is
+configured, task info can be fetched read-only. Do not proactively check for
+related tasks, ask about task assignment, or reference the task provider unless
+the user's question calls for it.
 
 ## Strict Read-Only Rules
 
@@ -74,8 +76,8 @@ This skill MUST NOT:
 This skill CAN:
 - Read files (Read, Glob, Grep)
 - Run read-only shell commands (git log, git blame, git diff, ls, etc.)
-- Fetch task details from the configured provider (read-only MCP calls,
-  delegated to subagent)
+- Fetch task details from the configured provider (read-only, via subagent)
+  but only when the user's question is explicitly about tasks or priorities
 - Search the web (WebSearch, WebFetch)
 - Fetch library documentation (context7 MCP)
 - Dispatch research-only subagents (Explore type)
