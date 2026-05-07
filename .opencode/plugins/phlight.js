@@ -2,7 +2,7 @@
  * Phlight plugin for OpenCode
  *
  * Registers phlight skills directory via config hook and injects
- * bootstrap context via system prompt transform.
+ * bootstrap context into the first user message.
  */
 
 import path from 'path';
@@ -62,11 +62,17 @@ context and rules files at the equivalent scopes.
       }
     },
 
-    'experimental.chat.system.transform': async (_input, output) => {
+    'experimental.chat.messages.transform': async (_input, output) => {
       const bootstrap = getBootstrapContent();
-      if (bootstrap) {
-        (output.system ||= []).push(bootstrap);
-      }
+      if (!bootstrap || !output.messages.length) return;
+
+      const firstUser = output.messages.find((message) => message.info.role === 'user');
+      if (!firstUser || !firstUser.parts.length) return;
+
+      if (firstUser.parts.some((part) => part.type === 'text' && part.text.includes('<PHLIGHT_CONTEXT>'))) return;
+
+      const firstPart = firstUser.parts[0];
+      firstUser.parts.unshift({ ...firstPart, type: 'text', text: bootstrap });
     }
   };
 };

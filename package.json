@@ -1,6 +1,26 @@
 {
   "name": "phlight",
   "version": "0.2.13",
+  "description": "Structured development workflow skills for AI coding agents",
   "type": "module",
-  "main": ".opencode/plugins/phlight.js"
+  "main": ".opencode/plugins/phlight.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evansendra/phlight.git"
+  },
+  "author": "Evan Sendra",
+  "license": "MIT",
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "claude",
+    "claude-plugin",
+    "workflow",
+    "ai-agents"
+  ],
+  "files": [
+    "skills/",
+    ".opencode/plugins/",
+    "README.md"
+  ]
 }
