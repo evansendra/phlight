@@ -2,56 +2,77 @@
 
 A shitty little set of workflow skills that aspires to be a controlled, modular workflow for your AI coding agent. Built on [Superpowers](https://github.com/obra/superpowers).
 
-**[User Guide](docs/guide.md)** - how it works, flags, human stops, platform differences, common workflows
-**[Skill Reference](docs/reference.md)** - args, flags, inputs, outputs for every skill
+Every skill accepts `--help` (also `-h`, `help`) to print its usage screen and exit without running. That's the authoritative reference for args, flags, and prerequisites.
 
 ## Skills
+
+**Pipeline** (chain with `--auto`):
 
 | Skill | Purpose |
 |---|---|
 | **architect** | Brainstorm and plan interactively, producing a plan file |
+| **split** | Break large plans into PR-sized chunks with dependency tracking |
 | **implement** | Execute a plan with subagent-driven development |
 | **review** | Opinionated PR fitness review focused on bloat and anti-patterns |
 | **merge** | Create PR, wait for checks, merge, cleanup |
-| **split** | Break large plans into PR-sized chunks with dependency tracking |
-| **fast** | Condensed single-session workflow for quick fixes |
-| **dispatch** | Send a task to an implementing agent in another tmux pane |
-| **task** | Create, view, and list tasks in your configured provider |
+
+**Standalone:**
+
+| Skill | Purpose |
+|---|---|
+| **fast** | Full pipeline in one session for quick fixes and small features |
+| **dispatch** | Send a task or question to an agent in another tmux pane |
 | **ask** | Read-only Q&A - ideation, triage, architecture questions |
+| **task** | Create, view, and list tasks in your configured provider |
+| **cleanup** | Delete stale git branches locally and optionally on remote |
 | **project-init** | Detect and configure project context for all skills |
 | **skill-build** | Interactive workflow for building new phlight skills |
-
-## Pipeline
 
 ```
 architect -> split (if needed) -> implement -> review -> merge
                                       |                    |
                                       +-- next split plan -+
 
-dispatch -----> [another pane runs fast or implement with full guardrails]
+dispatch -----> [another pane runs fast, implement, or ask]
 ```
 
-Use `--auto` to chain the full pipeline. Required human stops (plan approval, manual testing, merge confirmation) are always respected.
+## Flags
 
-Every skill accepts `--help` (also `-h`, `help`) to print its usage screen and exit without running.
+`--auto` chains skills together. After each skill completes (and any human stop is cleared), it invokes the next in the pipeline. Attach at any entry point:
+
+```
+/phlight-architect my feature --auto
+/phlight-implement path/to/plan.md --auto
+/phlight-review --auto
+```
+
+`--noconfirm` skips the merge confirmation step. All other human stops (plan approval, manual testing) are always enforced.
+
+## Human Stops
+
+Even in `--auto` mode, these always pause for you:
+
+| When | You need to |
+|---|---|
+| **architect** completes | Read the plan, approve or request changes |
+| **implement** completes | Go to the worktree, test manually, confirm it works |
+| **implement** hits a project-specific intervention | Follow the documented procedure (migrations, etc.) |
+| **merge** is ready | Confirm you want to merge (skipped with `--noconfirm`) |
+
+Everything else is autonomous.
 
 ## Installation
 
 ### Dependencies
 
-Install these first:
 - [Superpowers](https://github.com/obra/superpowers) - brainstorming, writing-plans, executing-plans skills
 - [pr-review-toolkit](https://github.com/anthropics/claude-plugins-official) - code-reviewer, code-simplifier agents
 
 ### Claude Code (via Plugin Marketplace)
 
-Register the marketplace:
-
 ```bash
 /plugin marketplace add evansendra/phlight
 ```
-
-Then install the plugin:
 
 ```bash
 /plugin install phlight@phlight-marketplace
@@ -73,29 +94,15 @@ Add to your `opencode.json` (project-level or `~/.config/opencode/opencode.json`
 }
 ```
 
-Pin a specific version:
-
-```json
-{
-  "plugin": ["phlight@git+https://github.com/evansendra/phlight.git#v0.1.0"]
-}
-```
-
-### Verify Installation
-
-Start a new session and run:
+### Verify
 
 ```
 /phlight-project-init --check
 ```
 
-(OpenCode: `phlight-project-init --check`)
-
 ## Configuration
 
-phlight uses project-specific config sections in your CLAUDE.md or rules files. Run `/phlight-project-init` for guided setup, or add manually:
-
-### Task Management (required)
+Config lives in your CLAUDE.md or rules files. Run `/phlight-project-init` for guided setup, or add manually:
 
 ```markdown
 ## Task Management
@@ -104,9 +111,7 @@ phlight uses project-specific config sections in your CLAUDE.md or rules files. 
 - id-format: #xxx
 ```
 
-Supported providers: `clickup`, `linear`, `github`, `jira`, `none`
-
-### Quality Gates (required for merge/fast)
+Providers: `clickup`, `linear`, `github`, `jira`, `none`
 
 ```markdown
 ## Quality Gates
@@ -115,21 +120,27 @@ Supported providers: `clickup`, `linear`, `github`, `jira`, `none`
 - format: npm run format
 ```
 
-### Plans (optional)
-
 ```markdown
 ## Plans
 - directory: docs/plans
 - pr-target: 400
 ```
 
+Plans config is optional; defaults to `docs/plans/` and 400 lines per PR.
+
+### Config file locations
+
+| Scope | Claude Code | OpenCode |
+|---|---|---|
+| Project (shared) | `CLAUDE.md` or `.claude/CLAUDE.md` | `opencode.md` or `.opencode/opencode.md` |
+| Per-user | `.claude/rules/CLAUDE.local.md` | `.opencode/rules/*.local.md` |
+| Global | `~/.claude/CLAUDE.md` | `~/.config/opencode/opencode.md` |
+
 ## Quick Start
 
 ```
 /phlight-fast fix the login redirect loop on the /callback route
 ```
-
-Or for larger work:
 
 ```
 /phlight-architect add CSV export to the reports dashboard --auto
