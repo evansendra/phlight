@@ -193,11 +193,13 @@ fast/implement template.
 #### Ask template
 
 ```
-Use the phlight ask skill to answer this question. If you have phlight
-installed, invoke it (e.g. /phlight-ask or phlight-ask). If you do not have
-phlight installed, do NOT attempt to install it - instead answer the question
-by reading the codebase, searching, and analyzing. Do NOT create files,
-branches, worktrees, tasks, or modify anything.
+Use the phlight ask skill to answer this question. Do NOT use slash commands
+to invoke it - they may not work in your environment. Instead say "Use the
+phlight-ask skill to answer: ..." in natural language so the agent framework
+routes it correctly. If you do not have phlight installed, do NOT attempt to
+install it - instead answer the question by reading the codebase, searching,
+and analyzing. Do NOT create files, branches, worktrees, tasks, or modify
+anything.
 
 ## Question
 {user's question or research topic}
@@ -235,12 +237,13 @@ Adapt the constraints section to the specific task - be explicit about what
 NOT to do based on the task scope.
 
 ```
-Use the phlight {skill} skill to complete this task. If you have phlight
-installed, invoke it (e.g. /phlight-{skill} or phlight-{skill}). If you
-do not have phlight installed, do NOT attempt to install it - instead
-follow these steps manually: {one-line summary of what the skill does,
-e.g. "scope the change, create a worktree and branch, implement, run
-quality gates, create a PR" for fast}.
+Use the phlight {skill} skill to complete this task. Do NOT use slash
+commands to invoke it - they may not work in your environment. Instead say
+"Use the phlight-{skill} skill to: ..." in natural language so the agent
+framework routes it correctly. If you do not have phlight installed, do NOT
+attempt to install it - instead follow these steps manually: {one-line
+summary of what the skill does, e.g. "scope the change, create a worktree
+and branch, implement, run quality gates, create a PR" for fast}.
 
 Task: {task-id} {task-title}
 {--noconfirm if flag was set: "Skip merge confirmation (--noconfirm)"}
@@ -443,11 +446,12 @@ dispatched at the overseer's discretion.
 
 **Merge:**
 ```
-Use the phlight merge skill to merge this work. If you have phlight
-installed, invoke it (e.g. /phlight-merge or phlight-merge). If you do
-not have phlight installed, do NOT attempt to install it - instead follow
-these steps manually: run quality gates, create a PR, wait for checks,
-squash-merge, cleanup worktree/branch.
+Use the phlight merge skill to merge this work. Do NOT use slash commands
+to invoke it - they may not work in your environment. Instead say "Use
+the phlight-merge skill" in natural language so the agent framework routes
+it correctly. If you do not have phlight installed, do NOT attempt to
+install it - instead follow these steps manually: run quality gates, create
+a PR, wait for checks, squash-merge, cleanup worktree/branch.
 
 Skip merge confirmation (--noconfirm).
 
