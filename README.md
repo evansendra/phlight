@@ -86,7 +86,8 @@ claude --plugin-dir /path/to/phlight
 
 ### OpenCode
 
-Add to your `opencode.json` (project-level or `~/.config/opencode/opencode.json`):
+Add phlight as an npm runtime plugin in your OpenCode config, either project-level
+`opencode.json` or global `~/.config/opencode/opencode.jsonc`:
 
 ```json
 {
@@ -94,11 +95,21 @@ Add to your `opencode.json` (project-level or `~/.config/opencode/opencode.json`
 }
 ```
 
+Restart OpenCode after changing config. This is the same runtime-plugin pattern
+Superpowers uses: the package registers `skills/` from
+`.opencode/plugins/phlight.js`. It is not a TUI plugin, so do not install it
+through the TUI plugin installer.
+
+OpenCode caches npm plugins under `~/.cache/opencode/packages/`, not `~/.config/opencode/plugins/`.
+
 ### Verify
 
+```bash
+opencode debug config | rg 'phlight|plugin_origins|skills'
+node -p 'require(process.env.HOME + "/.cache/opencode/packages/phlight@latest/node_modules/phlight/package.json").version'
 ```
-/phlight-project-init --check
-```
+
+In a new OpenCode session, use the skill tool to list skills and confirm the `phlight-*` skills are available.
 
 ## Configuration
 
