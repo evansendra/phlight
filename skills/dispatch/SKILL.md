@@ -338,14 +338,13 @@ the protocol.
 
 Present the generated prompt to the overseer. After approval:
 
-1. Send via: `tmux send-keys -t {dispatch-name} "{prompt}" && sleep 0.1 && tmux send-keys -t {dispatch-name} Enter`
-   Use the dispatch name assigned in step 5 as the target
-2. Escape any double quotes in the prompt body before sending
-3. If the prompt is too long for a single tmux send-keys (over ~1500 chars),
-   write it to a temp file and have the implementer read it:
-   write prompt to `/tmp/phlight-dispatch-{dispatch-name}.md`, then send
-   `tmux send-keys -t {dispatch-name} "Read /tmp/phlight-dispatch-{dispatch-name}.md and
-   execute the task described there" && sleep 0.1 && tmux send-keys -t {dispatch-name} Enter`
+1. If the prompt is short enough to send inline (under ~140 chars), send
+   directly: `tmux send-keys -t {dispatch-name} "{prompt}" && sleep 0.1 && tmux send-keys -t {dispatch-name} Enter`
+2. Otherwise (almost always), write the prompt to a temp file and send a
+   short read instruction. Long payloads get mangled by tmux's input buffer
+   - characters dropped, special characters interpreted, buffer overflow.
+   Write prompt to `/tmp/phlight-dispatch-{dispatch-name}.md`, then send:
+   `tmux send-keys -t {dispatch-name} "Read /tmp/phlight-dispatch-{dispatch-name}.md and execute the task described there" && sleep 0.1 && tmux send-keys -t {dispatch-name} Enter`
 
 ### Step 8: Confirm dispatch
 

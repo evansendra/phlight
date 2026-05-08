@@ -90,7 +90,7 @@ Add to your `opencode.json` (project-level or `~/.config/opencode/opencode.json`
 
 ```json
 {
-  "plugin": ["phlight@git+https://github.com/evansendra/phlight.git"]
+  "plugin": ["phlight"]
 }
 ```
 
