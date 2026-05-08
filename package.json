@@ -1,6 +1,6 @@
 {
   "name": "phlight",
-  "version": "0.2.14",
+  "version": "0.2.15",
   "description": "Structured development workflow skills for AI coding agents",
   "type": "module",
   "main": ".opencode/plugins/phlight.js",
