@@ -1,4 +1,10 @@
 .worktrees/
 node_modules/
+.opencode/opencode.json
+.opencode/node_modules/
+.opencode/package.json
+.opencode/package-lock.json
+.opencode/bun.lock
+.claude/settings.local.json
 *.local.md
 *.swp
